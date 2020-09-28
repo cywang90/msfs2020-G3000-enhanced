@@ -257,5 +257,18 @@ class SvgMapRotatable extends SvgMap {
 				this.orientation = "hdg";
 		}
 	}
+	
+	// returns lat/long coordinates of (X,Y) point of map with plane at center, taking into account any current map rotation
+	// (X,Y) is vector of arbitrary units where (0,0) is bottom left and (1000, 1000) is top right of map
+	XYToCoordinatesFromPlaneWithRotation(xy) {
+		// transform xy with opposite of map rotation;
+		let transformed = new Vec2();
+		transformed.x = (xy.x - 500) * this.cosRotation - (xy.y - 500) * this.sinRotation + 500;
+		transformed.y = (xy.x - 500) * this.sinRotation + (xy.y - 500) * this.cosRotation + 500;
+		
+		let lat = this.planeCoordinates.lat - ((transformed.y - 500) / 1000) * this._angularHeight;
+        let long = this.planeCoordinates.long + ((transformed.x - 500) / 1000) * this._angularWidth;
+        return new LatLongAlt(lat, long);
+    }
 }
 checkAutoload();

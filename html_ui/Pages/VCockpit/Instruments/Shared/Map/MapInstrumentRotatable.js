@@ -198,6 +198,17 @@ class MapInstrumentRotatable extends MapInstrument {
             this.bingMap.style.left = fastToFixed((w - max) / 2, 0) + "px";
         }
     }
+	
+	centerOnPlane() {
+		if (this.orientation == "north") {
+			super.centerOnPlane();
+		} else {
+			// if orientation is heading or track up, we want to place the plane 25% from the bottom of the map,
+			// but vector needs to be adjusted for overdraw factor of sqrt(2)
+			let target = this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500, 323));
+			this.setNavMapCenter(target);
+		}
+    }
 }
 customElements.define("map-instrument-rot", MapInstrumentRotatable);
 checkAutoload();
