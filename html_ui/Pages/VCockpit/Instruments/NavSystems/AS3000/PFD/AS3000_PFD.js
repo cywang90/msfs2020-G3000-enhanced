@@ -63,6 +63,7 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
 class AS3000_PFD_InnerMap extends PFD_InnerMap {
     constructor() {
         super(...arguments);
+		this.lastOrientation = 0;
 		this.enabled = true;
     }
     init(_root) {
@@ -71,10 +72,31 @@ class AS3000_PFD_InnerMap extends PFD_InnerMap {
             TemplateElement.callNoBinding(this.instrument, () => {
                 this.onTemplateLoaded();
             });
-			this.instrument.setOrientation("hdg");
+			//this.instrument.setOrientation("hdg");
         }
         this.mapContainer = this.gps.getChildById("InnerMap");
+		SimVar.SetSimVarValue("L:AS3000_PFD_Map_Orientation", "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
     }
+	onUpdate(_deltaTime) {
+		super.onUpdate(_deltaTime);
+		
+		// update map orientation
+		let orientation = SimVar.GetSimVarValue("L:AS3000_PFD_Map_Orientation", "number");
+		if (this.lastOrientation != orientation) {
+			switch (orientation) {
+			case 0:
+				this.instrument.setOrientation("hdg");
+				break;
+			case 1:
+				this.instrument.setOrientation("trk");
+				break;
+			case 2:
+				this.instrument.setOrientation("north");
+				break;
+			}
+			this.lastOrientation = orientation;
+		}
+	}
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SoftKeys_InsetOn") {

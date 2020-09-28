@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="line">
-                        <div class="gradientButton" id="PFDMapSettingsButton" state="Hidden">
+                        <div class="gradientButton" id="PFDMapSettingsButton">
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_INSET_SETTINGS_1.png" />
                             <div class="title">PFD Map Settings</div>
                         </div>
@@ -206,6 +206,20 @@
                         </table>
                     </div>
                 </div>
+				<div id="PFDMapSettings">
+                    <div id="PFDMapSettingsLeft">
+                        <div class="gradientButton" id="PFDMapOrientationButton">
+                            <div class="upperTitle">Orientation</div>
+							<div class="lowerValue"></div>
+                        </div>
+                        <div class="gradientButton" id="PFDMapSyncButton" state="Hidden">
+                            <div class="upperTitle">Map Sync</div>
+                        </div>
+                        <div class="gradientButton" id="PFDMapDetail" state="Hidden">
+                            <div class="upperTitle">Map Detail</div>
+                        </div>
+                    </div>
+                </div>
                 <div id="PFDSettings">
                     <div class="buttonsContainer">
                         <div class="line">
@@ -329,16 +343,16 @@
                         </div>
                     </div>
                 </div>
-				<div id="MapSettings">
-                    <div id="MapSettingsLeft">
-                        <div class="gradientButton" id="MapOrientationButton">
+				<div id="MFDMapSettings">
+                    <div id="MFDMapSettingsLeft">
+                        <div class="gradientButton" id="MFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
 							<div class="lowerValue"></div>
                         </div>
-                        <div class="gradientButton" id="MapSyncButton" state="Hidden">
+                        <div class="gradientButton" id="MFDMapSyncButton" state="Hidden">
                             <div class="upperTitle">Map Sync</div>
                         </div>
-                        <div class="gradientButton" id="Map Detail" state="Hidden">
+                        <div class="gradientButton" id="MFDMapDetailButton" state="Hidden">
                             <div class="upperTitle">Map Detail</div>
                         </div>
                     </div>
@@ -2246,20 +2260,40 @@
                     </div>
                 </div>
             </div>
-			<div class="PopUpWindow Transparent" id="MapOrientationSelect" state="Inactive">
+			<div class="PopUpWindow Transparent MapOrientationSelect" id="PFDMapOrientationSelect" state="Inactive">
                 <div class="WindowTitle">Map Orientation</div>
                 <div class="Container">
-                    <div class="gradientButton" id="MapOrientationHeading" state="Highlight">
+                    <div class="gradientButton" id="PFDMapOrientationHeading" state="Highlight">
                         <div class="mainText">
                             Heading Up
                         </div>
                     </div>
-                    <div class="gradientButton" id="MapOrientationTrack" state="Highlight">
+                    <div class="gradientButton" id="PFDMapOrientationTrack" state="">
                         <div class="mainText">
                             Track Up
                         </div>
                     </div>
-                    <div class="gradientButton" id="MapOrientationNorth" state="Highlight">
+                    <div class="gradientButton" id="PFDMapOrientationNorth" state="">
+                        <div class="mainText">
+                            North Up
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="PopUpWindow Transparent MapOrientationSelect" id="MFDMapOrientationSelect" state="Inactive">
+                <div class="WindowTitle">Map Orientation</div>
+                <div class="Container">
+                    <div class="gradientButton" id="MFDMapOrientationHeading" state="Highlight">
+                        <div class="mainText">
+                            Heading Up
+                        </div>
+                    </div>
+                    <div class="gradientButton" id="MFDMapOrientationTrack" state="">
+                        <div class="mainText">
+                            Track Up
+                        </div>
+                    </div>
+                    <div class="gradientButton" id="MFDMapOrientationNorth" state="">
                         <div class="mainText">
                             North Up
                         </div>
