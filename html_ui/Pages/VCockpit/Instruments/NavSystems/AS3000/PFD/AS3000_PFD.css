@@ -175,13 +175,13 @@ as3000-pfd-element {
 		  left: 0%;
 		  top: 0%;
           width: 11vh;
-          height: 3vh;
-		  font-size: 2vh;
+          height: 2.5vh;
+		  font-size: 1.7vh;
           text-align: center; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange {
 		  position: absolute;
 		  left: 0%;
-		  top: 3.5vh;
+		  top: 2.7vh;
           width: 8vh;
           height: 3vh; }
 		  as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .range {
