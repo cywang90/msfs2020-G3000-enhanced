@@ -9,11 +9,11 @@ class SvgAirplaneElementRotatable extends SvgAirplaneElement {
             let rotation = "rotate(" + fastToFixed(this._forcedRot, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + ")";
             this.svgElement.children[0].setAttribute("transform", rotation);
         }
-        else if (map.orientation == "north") {
+        else if (map.orientation != "hdg") {
             if (this._lastTrack !== track && isFinite(track)) {
                 if (this.svgElement.children[0]) {
                     this._lastTrack = track;
-                    let rotation = "rotate(" + fastToFixed(track, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + ")";
+                    let rotation = "rotate(" + fastToFixed(track + map.rotation, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.5), 1) + ")";
                     this.svgElement.children[0].setAttribute("transform", rotation);
                 }
             }
@@ -115,7 +115,7 @@ class NPCAirplaneRotatableManager {
 
 class SvgNPCAirplaneElementRotatable extends SvgNPCAirplaneElement {
     constructor(name = "") {
-        super();
+        super(name);
     }
     
     updateDraw(map) {
@@ -131,7 +131,7 @@ class SvgNPCAirplaneElementRotatable extends SvgNPCAirplaneElement {
                     this._lastHeading = this.heading;
                     let angle = this.heading;
                     if (map.orientation != "north") {
-                        angle -= map.planeDirection;
+                        angle += map.rotation;
                     }
                     let rotation = "rotate(" + fastToFixed(angle, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + ")";
                     this.svgElement.children[0].setAttribute("transform", rotation);

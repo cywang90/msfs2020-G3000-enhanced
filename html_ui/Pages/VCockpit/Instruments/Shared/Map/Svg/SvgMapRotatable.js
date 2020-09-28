@@ -1,6 +1,7 @@
 class SvgMapRotatable extends SvgMap {
     constructor(_root, arg) {
 		super(_root, arg);
+		
 		/*
 		 * Defines orientation of the map:
 		 * hdg: current aircraft heading up
@@ -8,6 +9,10 @@ class SvgMapRotatable extends SvgMap {
 		 * north: North up
 		 */
 		this.orientation = "hdg";
+		
+		this.rotation = 0;		// rotation of map, in degrees
+		this.cosRotation = 1;	// cosine of rotation, mainly for internal use
+		this.sinRotation = 0;	// sine of rotation, mainly for internal use
     }
     
     update() {
@@ -39,22 +44,18 @@ class SvgMapRotatable extends SvgMap {
             this.svgHtmlElement.appendChild(this.planeLayer);
         }
 		
-        let newPlaneDirectionDeg = 0;
 		if (this.orientation == "hdg") {
-			newPlaneDirectionDeg = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+			this.rotation = -SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
 		} else if (this.orientation == "trk") {
-			newPlaneDirectionDeg = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+			this.rotation = -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+		} else {
+			this.rotation = 0;
 		}
-        while (newPlaneDirectionDeg < 0) {
-            newPlaneDirectionDeg += 360;
-        }
-        while (newPlaneDirectionDeg >= 360) {
-            newPlaneDirectionDeg -= 360;
-        }
-        this.planeDirection = newPlaneDirectionDeg;
-        this.planeDirectionRadian = -this.planeDirection / 180 * Math.PI;
-        this.cosPlaneDirection = Math.cos(this.planeDirectionRadian);
-        this.sinPlaneDirection = Math.sin(this.planeDirectionRadian);
+
+        this.planeDirection = Math.abs(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree")) % 360;
+        
+        this.cosRotation = Math.cos(this.rotation * Math.PI / 180);
+        this.sinRotation = Math.sin(this.rotation * Math.PI / 180);
         this.planeAltitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
         let w = this.htmlRoot.getWidth();
         let h = this.htmlRoot.getHeight();
@@ -189,8 +190,8 @@ class SvgMapRotatable extends SvgMap {
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
         if (this.orientation != "north") {
-            ref.x = x * this.cosPlaneDirection - y * this.sinPlaneDirection + 500;
-            ref.y = x * this.sinPlaneDirection + y * this.cosPlaneDirection + 500;
+            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
         }
         else {
             ref.x = x + 500;
@@ -205,8 +206,8 @@ class SvgMapRotatable extends SvgMap {
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
         if (this.orientation != "north") {
-            ref.x = x * this.cosPlaneDirection - y * this.sinPlaneDirection + 500;
-            ref.y = x * this.sinPlaneDirection + y * this.cosPlaneDirection + 500;
+            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
         }
         else {
             ref.x = x + 500;
@@ -221,8 +222,8 @@ class SvgMapRotatable extends SvgMap {
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
         if (this.orientation != "north") {
-            ref.x = x * this.cosPlaneDirection - y * this.sinPlaneDirection + 500;
-            ref.y = x * this.sinPlaneDirection + y * this.cosPlaneDirection + 500;
+            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
         }
         else {
             ref.x = x + 500;
@@ -237,8 +238,8 @@ class SvgMapRotatable extends SvgMap {
         deltaLat += 0.5;
         let x = xNorth * deltaLat + xSouth * (1 - deltaLat);
         if (this.orientation != north) {
-            ref.x = x * this.cosPlaneDirection - y * this.sinPlaneDirection + 500;
-            ref.y = x * this.sinPlaneDirection + y * this.cosPlaneDirection + 500;
+            ref.x = x * this.cosRotation - y * this.sinRotation + 500;
+            ref.y = x * this.sinRotation + y * this.cosRotation + 500;
         }
         else {
             ref.x = x + 500;
