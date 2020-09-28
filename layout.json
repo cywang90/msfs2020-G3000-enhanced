@@ -1,0 +1,104 @@
+{
+  "content": [
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.css",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.html",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.css",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.html",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js",
+      "size": 152909,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.css",
+      "size": 115868,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.html",
+      "size": 127887,
+      "date": 132455472490000000
+    },
+	{
+      "path": "ModelBehaviorDefs/Asobo/GlassCockpit/AS3000.xml",
+      "size": 31295,
+      "date": 132455472490000000
+    },
+	{
+      "path": "ModelBehaviorDefs/Asobo/GlassCockpit/AS580.xml",
+      "size": 8446,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.css",
+      "size": 1819,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.html",
+      "size": 4535,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.js",
+      "size": 64393,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirplaneElementRotatable.js",
+      "size": 22648,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgMapRotatable.js",
+      "size": 22648,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadNetworkElementRotatable.js",
+      "size": 22648,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_LEFT_MINUS.png",
+      "size": 935,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_RIGHT_PLUS.png",
+      "size": 1057,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_HORIZ_BLUE.png",
+      "size": 1207,
+      "date": 132455472490000000
+    }
+  ]
+}
