@@ -67,6 +67,7 @@ class MapInstrumentRotatable extends MapInstrument {
             this.disMap = this.querySelector("#DISMap");
             this.gsMap = this.querySelector("#GSMap");
             this.mapRangeElement = this.querySelector("#MapRange");
+			this.mapRangeElementRange = this.mapRangeElement.getElementsByClassName("range")[0];
             this.mapOrientationElement = this.querySelector("#MapOrientation");
             if (!this.bShowOverlay) {
                 this.mapRangeElement.classList.add("hide");
@@ -153,6 +154,58 @@ class MapInstrumentRotatable extends MapInstrument {
 			this.bingMap.style.transform = transform;
 		}
 	}
+	
+	update() {
+        this.updateVisibility();
+        this.updateSize(true);
+        if (this.selfManagedInstrument) {
+            this.instrument.dataMetaManager.UpdateAll();
+        }
+        if (this.wpt) {
+            var wpId = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
+            if (this.wpIdValue != wpId) {
+                this.wpt.textContent = wpId;
+                this.wpIdValue = wpId;
+            }
+        }
+        if (this.dtkMap) {
+            var wpDtk = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0);
+            if (this.wpDtkValue != wpDtk) {
+                this.dtkMap.textContent = wpDtk;
+                this.wpDtkValue = wpDtk;
+            }
+        }
+        if (this.disMap) {
+            var wpDis = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical mile"), 1);
+            if (this.wpDisValue != wpDis) {
+                this.disMap.textContent = wpDis;
+                this.wpDisValue = wpDis;
+            }
+        }
+        if (this.gsMap) {
+            var gs = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0);
+            if (this.gsValue != gs) {
+                this.gsMap.textContent = gs;
+                this.gsValue = gs;
+            }
+        }
+        if (this.mapRangeElement) {
+			let currentRange = this.getDisplayRange();
+            if (this.rangeValue != currentRange) {
+				Avionics.Utils.diffAndSet(this.mapRangeElementRange, currentRange);
+                this.rangeValue = currentRange;
+            }
+        }
+        if (this.navMap) {
+            this.navMap.update();
+        }
+        if (this.navMap && this.navMap.centerCoordinates) {
+            this.updateInputs();
+        }
+        if (this.bIsCursorDisplayed && this.eBingMode != EBingMode.CURSOR) {
+            this.hideCursor();
+        }
+    }
 	
 	setOrientation(_val) {
 		switch (_val) {

@@ -38,7 +38,8 @@ map-instrument-rot {
     width: 13%;
     height: calc( 2.5 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
-    color: white; }
+    color: #8ed0d5;
+	border: solid 1px white; }
   map-instrument-rot #MapRange {
     position: absolute;
     bottom: 0%;
@@ -46,8 +47,12 @@ map-instrument-rot {
     width: 5%;
     height: calc( 6 * 1vh * var(--bodyHeightScale));
     background-color: #1a1d21;
-    color: aquamarine;
-    text-align: center; }
+    color: #8ed0d5;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+    text-align: center; 
+	border: solid 1px white; }
   map-instrument-rot #MapSVG, map-instrument-rot #road-network-canvas {
     transform: rotateX(0);
     position: absolute; }

@@ -171,13 +171,26 @@ as3000-pfd-element {
         border: 0.4vh solid white;
         font-size: 2.5vh; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapOrientation {
+		  position: absolute;
+		  left: 0%;
+		  top: 0%;
           width: 11vh;
           height: 3vh;
 		  font-size: 2vh;
           text-align: center; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange {
+		  position: absolute;
+		  left: 0%;
+		  top: 3.5vh;
           width: 8vh;
-          height: 4vh; }
+          height: 3vh; }
+		  as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .range {
+			font-size: 2vh;
+            text-align: right; }
+		  as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapRange .unit {
+			margin: 0 5% 2.5%;
+			font-size: 1.5vh;
+            text-align: left; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap #MapCursor {
           height: 9%; }
       as3000-pfd-element #Mainframe #InstrumentsContainer #Altimeter {
