@@ -89,7 +89,7 @@ as3000-tsc-horizontal-element {
       left: 0%;
       bottom: 0%;
       background-color: black; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums, as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WaypointsInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Nearest, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AircraftSystems, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums, as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #MapSettings, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WaypointsInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Nearest, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestAirport, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestIntersection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestVOR, as3000-tsc-horizontal-element #Electricity #PagesDisplay #NearestNDB, as3000-tsc-horizontal-element #Electricity #PagesDisplay #Procedures, as3000-tsc-horizontal-element #Electricity #PagesDisplay #DepartureSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ArrivalSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #ApproachSelection, as3000-tsc-horizontal-element #Electricity #PagesDisplay #AircraftSystems, as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig {
         display: none; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
@@ -100,6 +100,7 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
+	  as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MapSettings] #MapSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
@@ -303,6 +304,17 @@ as3000-tsc-horizontal-element {
           height: 15vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu[state=Inactive] {
           display: none; }
+	  as3000-tsc-horizontal-element #Electricity #PagesDisplay #MapSettings #MapSettingsLeft {
+	    position: absolute;
+		top: 5%;
+		left: 2.5%;
+		width: 27.5%;
+		display: flex; 
+		flex-flow: column nowrap;
+		justify-content: space-between;
+		align-items: center; }
+		as3000-tsc-horizontal-element #Electricity #PagesDisplay #MapSettings #MapSettingsLeft .gradientButton {
+		  width: 100%; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo #SelectionTabs {
         position: absolute;
         top: 2.5%;
@@ -1971,6 +1983,26 @@ as3000-tsc-horizontal-element {
           top: 20%;
           text-align: center;
           width: 100%; }
+	as3000-tsc-horizontal-element #Electricity #MapOrientationSelect .WindowTitle {
+      background-color: black; }
+    as3000-tsc-horizontal-element #Electricity #MapOrientationSelect .Container {
+      position: absolute;
+      width: 50%;
+      left: 25%;
+      height: 80%;
+      bottom: 5%;
+      background-color: black;
+      padding: 2%;
+      border: 0.4vh solid white; }
+      as3000-tsc-horizontal-element #Electricity #MapOrientationSelect .Container .gradientButton {
+        width: 100%; 
+		margin-bottom: 5%; }
+        as3000-tsc-horizontal-element #Electricity #MapOrientationSelect .Container .gradientButton .mainText {
+          font-size: 5vh;
+          position: absolute;
+          top: 30%;
+          text-align: center;
+          width: 100%; }
     as3000-tsc-horizontal-element #Electricity #LoadFrequencyPopup .content {
       position: absolute;
       left: 10%;
@@ -2351,6 +2383,10 @@ as3000-tsc-horizontal-element {
       background: none;
       background-color: white; }
       as3000-tsc-horizontal-element .gradientButton[state=White] .mainText {
+        color: black; }
+	as3000-tsc-horizontal-element .gradientButton[state=Highlight] {
+      background: linear-gradient(#a8e5ff, rgba(0, 74, 105, 20) 80%); }
+	  as3000-tsc-horizontal-element .gradientButton[state=Highlight] .mainText {
         color: black; }
     as3000-tsc-horizontal-element .gradientButton:Hover:Active {
       background-color: #0093d0; }

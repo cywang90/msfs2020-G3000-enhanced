@@ -63,6 +63,7 @@ class AS3000_MFD_MapElement extends MapInstrumentElement {
         this.wasOverride = false;
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
+		this.lastOrientation = 0;
     }
 	init(root) {
         this.instrument = root.querySelector("map-instrument-rot");
@@ -70,7 +71,8 @@ class AS3000_MFD_MapElement extends MapInstrumentElement {
             TemplateElement.callNoBinding(this.instrument, () => {
                 this.onTemplateLoaded();
             });
-			this.instrument.setOrientation("hdg");
+			//this.instrument.setOrientation("hdg");
+			SimVar.SetSimVarValue("L:AS3000_MFD_Map_Orientation", "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
         }
     }
     onUpdate(_deltaTime) {
@@ -115,6 +117,23 @@ class AS3000_MFD_MapElement extends MapInstrumentElement {
             this.lastMapMode = mapMode;
             this.lastWeatherMapMode = weatherMapMode;
         }
+		
+		// update map orientation
+		let orientation = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");
+		if (this.lastOrientation != orientation) {
+			switch (orientation) {
+			case 0:
+				this.instrument.setOrientation("hdg");
+				break;
+			case 1:
+				this.instrument.setOrientation("trk");
+				break;
+			case 2:
+				this.instrument.setOrientation("north");
+				break;
+			}
+			this.lastOrientation = orientation;
+		}
     }
 }
 class AS3000_MFD_MainMap extends NavSystemPage {
