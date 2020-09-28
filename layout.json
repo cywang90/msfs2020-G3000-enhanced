@@ -31,6 +31,11 @@
       "date": 132455472490000000
     },
 	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/InnerMapConfig/mapConfig.json",
+      "size": 2780,
+      "date": 132455472490000000
+    },
+	{
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js",
       "size": 152909,
       "date": 132455472490000000
