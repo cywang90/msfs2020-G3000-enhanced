@@ -256,9 +256,9 @@ class MapInstrumentRotatable extends MapInstrument {
 		if (this.orientation == "north") {
 			super.centerOnPlane();
 		} else {
-			// if orientation is heading or track up, we want to place the plane 25% from the bottom of the map,
+			// if orientation is heading or track up, we want to place the plane 33% from the bottom of the map,
 			// but vector needs to be adjusted for overdraw factor of sqrt(2)
-			let target = this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500, 323));
+			let target = this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(500, 382));
 			this.setNavMapCenter(target);
 		}
     }
