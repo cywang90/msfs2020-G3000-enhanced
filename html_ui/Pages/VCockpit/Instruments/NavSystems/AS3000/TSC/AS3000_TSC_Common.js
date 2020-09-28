@@ -134,9 +134,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", new AS3000_TSC_TerrainAlert()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Confirmation Window", "ConfirmationWindow", this.confirmationWindow));
 		
-		this.pfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "PFDMapOrientationSelect", new AS3000_TSC_PFDMapOrientationSelect());
+		this.pfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "PFDMapOrientationSelect", new AS3000_TSC_MapOrientationSelect(["PFDMapOrientationHeading", "PFDMapOrientationTrack", "PFDMapOrientationNorth"], "PFD", "PFD Home", function() {return SimVar.GetSimVarValue("L:AS3000_PFD_Map_Orientation", "number");}));
         this.pfdMapOrientationSelect.setGPS(this);
-		this.mfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "MFDMapOrientationSelect", new AS3000_TSC_MFDMapOrientationSelect());
+		this.mfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "MFDMapOrientationSelect", new AS3000_TSC_MapOrientationSelect(["MFDMapOrientationHeading", "MFDMapOrientationTrack", "MFDMapOrientationNorth"], "MFD", "MFD Home", function() {return SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");}));
         this.mfdMapOrientationSelect.setGPS(this);
     }
     parseXMLConfig() {
@@ -489,50 +489,6 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
 		SimVar.SetSimVarValue("L:AS3000_MFD_Map_Orientation", "number", _val);
 		this.updateOrientationValue();
     }
-}
-
-class AS3000_TSC_MFDMapOrientationSelect extends NavSystemElement {	
-    init(root) {
-        this.window = root;
-        this.heading = this.gps.getChildById("MFDMapOrientationHeading");
-        this.track = this.gps.getChildById("MFDMapOrientationTrack");
-        this.north = this.gps.getChildById("MFDMapOrientationNorth");
-        this.gps.makeButton(this.heading, this.buttonClick.bind(this, 0));
-        this.gps.makeButton(this.track, this.buttonClick.bind(this, 1));
-        this.gps.makeButton(this.north, this.buttonClick.bind(this, 2));
-    }
-    onEnter() {
-        this.window.setAttribute("state", "Active");
-		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-		let currentOrientation = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");
-		Avionics.Utils.diffAndSetAttribute(this.heading, "state", (currentOrientation == 0) ? "Highlight" : "");
-        Avionics.Utils.diffAndSetAttribute(this.track, "state", (currentOrientation == 1) ? "Highlight" : "");
-        Avionics.Utils.diffAndSetAttribute(this.north, "state", (currentOrientation == 2) ? "Highlight" : "");
-    }
-    onExit() {
-		this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.window.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
-    setContext(_callback) {
-        this.callBack = _callback;
-    }
-    buttonClick(_source) {
-        this.callBack(_source);
-        this.gps.goBack();
-    }
-	back() {
-		this.gps.goBack();
-	}
-	backHome() {
-		this.gps.goBack();
-		this.gps.SwitchToPageName("MFD", "MFD Home");
-	}
 }
 
 class AS3000_TSC_WeatherSelection extends NavSystemElement {
@@ -2989,50 +2945,6 @@ class AS3000_TSC_PFDMapSettings extends NavSystemElement {
     }
 }
 
-class AS3000_TSC_PFDMapOrientationSelect extends NavSystemElement {	
-    init(root) {
-        this.window = root;
-        this.heading = this.gps.getChildById("PFDMapOrientationHeading");
-        this.track = this.gps.getChildById("PFDMapOrientationTrack");
-        this.north = this.gps.getChildById("PFDMapOrientationNorth");
-        this.gps.makeButton(this.heading, this.buttonClick.bind(this, 0));
-        this.gps.makeButton(this.track, this.buttonClick.bind(this, 1));
-        this.gps.makeButton(this.north, this.buttonClick.bind(this, 2));
-    }
-    onEnter() {
-        this.window.setAttribute("state", "Active");
-		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-		let currentOrientation = SimVar.GetSimVarValue("L:AS3000_PFD_Map_Orientation", "number");
-		Avionics.Utils.diffAndSetAttribute(this.heading, "state", (currentOrientation == 0) ? "Highlight" : "");
-        Avionics.Utils.diffAndSetAttribute(this.track, "state", (currentOrientation == 1) ? "Highlight" : "");
-        Avionics.Utils.diffAndSetAttribute(this.north, "state", (currentOrientation == 2) ? "Highlight" : "");
-    }
-    onExit() {
-		this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.window.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
-    setContext(_callback) {
-        this.callBack = _callback;
-    }
-    buttonClick(_source) {
-        this.callBack(_source);
-        this.gps.goBack();
-    }
-	back() {
-		this.gps.goBack();
-	}
-	backHome() {
-		this.gps.goBack();
-		this.gps.SwitchToPageName("PFD", "PFD Home");
-	}
-}
-
 class AS3000_TSC_PFDSettings extends NavSystemElement {
     constructor() {
         super(...arguments);
@@ -3562,5 +3474,56 @@ class AS3000_MapPointerControl extends NavSystemElement {
     }
     onMouseWheel(_e) {
     }
+}
+
+class AS3000_TSC_MapOrientationSelect extends NavSystemElement {
+	constructor(_buttonIDs, _homePageParent, _homePageName, _simVarGetter) {
+		super();
+		this.buttonList = [];
+		this.buttonIDs = _buttonIDs;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+		this.simVarGetter = _simVarGetter;
+	}
+	
+	init(root) {
+        this.window = root;
+		this.buttonIDs.forEach(function (value, index) {
+			this.buttonList[index] = this.gps.getChildById(value);
+			this.gps.makeButton(this.buttonList[index], this.buttonClick.bind(this, index));
+		}, this);
+    }
+    onEnter() {
+        this.window.setAttribute("state", "Active");
+		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+    }
+    onUpdate(_deltaTime) {
+		let currentOrientation = this.simVarGetter();
+		this.buttonList.forEach(function (value, index) {
+			Avionics.Utils.diffAndSetAttribute(value, "state", (currentOrientation == index) ? "Highlight" : "");
+		});
+    }
+    onExit() {
+		this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.window.setAttribute("state", "Inactive");
+    }
+    onEvent(_event) {
+    }
+    setContext(_callback) {
+        this.callBack = _callback;
+    }
+    buttonClick(_source) {
+        this.callBack(_source);
+        this.gps.goBack();
+    }
+	back() {
+		this.gps.goBack();
+	}
+	backHome() {
+		this.gps.goBack();
+		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
 }
 //# sourceMappingURL=AS3000_TSC_Common.js.map
