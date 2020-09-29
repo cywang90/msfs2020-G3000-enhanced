@@ -12,7 +12,7 @@ class AS3000_PFD extends NavSystem {
                 new AS3000_PFD_MainPage()
             ]),
         ];
-        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("L:AS3000_PFD_Map_Orientation")));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
@@ -60,49 +60,36 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
         }
     }
 }
-class AS3000_PFD_InnerMap extends PFD_InnerMap {
-    constructor() {
-        super(...arguments);
-		this.lastOrientation = 0;
+class AS3000_PFD_InnerMap extends AS3000_MapElement {
+    constructor(_orientationVarName) {
+        super(_orientationVarName);
+		this.gpsWasInReversionaryMode = false;
 		this.enabled = true;
     }
     init(_root) {
-        this.instrument = _root.querySelector("map-instrument-rot");
-        if (this.instrument) {
-            TemplateElement.callNoBinding(this.instrument, () => {
-                this.onTemplateLoaded();
-            });
-			//this.instrument.setOrientation("hdg");
-        }
+        super.init(_root);
         this.mapContainer = this.gps.getChildById("InnerMap");
-		SimVar.SetSimVarValue("L:AS3000_PFD_Map_Orientation", "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
     }
 	onUpdate(_deltaTime) {
 		super.onUpdate(_deltaTime);
 		
-		// update map orientation
-		let orientation = SimVar.GetSimVarValue("L:AS3000_PFD_Map_Orientation", "number");
-		if (this.lastOrientation != orientation) {
-			switch (orientation) {
-			case 0:
-				this.instrument.setOrientation("hdg");
-				break;
-			case 1:
-				this.instrument.setOrientation("trk");
-				break;
-			case 2:
-				this.instrument.setOrientation("north");
-				break;
-			}
-			this.lastOrientation = orientation;
-		}
+		if (this.gps.isInReversionaryMode() != this.gpsWasInReversionaryMode) {
+            this.gpsWasInReversionaryMode = this.gps.isInReversionaryMode();
+            this.gps.requestCall(() => {
+                this.mapContainer.style.display = "Block";
+                if (this.instrument)
+                    this.instrument.resize();
+            });
+        }
 	}
     onEvent(_event) {
         super.onEvent(_event);
         if (_event == "SoftKeys_InsetOn") {
             this.enabled = true;
+			this.mapContainer.style.display = "Block";
         }
         if (_event == "SoftKeys_InsetOff") {
+			this.mapContainer.style.display = "None";
             this.enabled = false;
         }
     }
@@ -147,7 +134,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.hsi = this.gps.getChildById("Compass");
         this.wind = this.gps.getChildById("WindData");
         this.mapInstrument.setGPS(this.gps);
-		this.innerMap = this.gps.getElementOfType(PFD_InnerMap);
+		this.innerMap = this.gps.getElementOfType(AS3000_PFD_InnerMap);
         this.attitude.svg.setAttribute("background", "false");
         this.rootMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Map Range-", this.changeMapRange.bind(this, "dec"), null, null, this.getInsetMapSoftkeyState.bind(this)),

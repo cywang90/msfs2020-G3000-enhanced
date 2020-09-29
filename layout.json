@@ -1,6 +1,11 @@
 {
   "content": [
 	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js",
+      "size": 31531,
+      "date": 132455472490000000
+    },
+	{
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.css",
       "size": 31531,
       "date": 132455472490000000

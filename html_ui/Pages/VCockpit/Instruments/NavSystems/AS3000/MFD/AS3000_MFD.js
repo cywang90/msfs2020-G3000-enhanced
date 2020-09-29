@@ -57,24 +57,14 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEvent(_event) {
     }
 }
-class AS3000_MFD_MapElement extends MapInstrumentElement {
-    constructor() {
-        super(...arguments);
+class AS3000_MFD_MapElement extends AS3000_MapElement {
+    constructor(_orientationVarName) {
+        super(_orientationVarName);
         this.wasOverride = false;
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
-		this.lastOrientation = 0;
     }
-	init(root) {
-        this.instrument = root.querySelector("map-instrument-rot");
-        if (this.instrument) {
-            TemplateElement.callNoBinding(this.instrument, () => {
-                this.onTemplateLoaded();
-            });
-			//this.instrument.setOrientation("hdg");
-			SimVar.SetSimVarValue("L:AS3000_MFD_Map_Orientation", "number", 0); // set default map orientation (0 = hdg, 1 = trk, 2 = north)
-        }
-    }
+	
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         let isPositionOverride = SimVar.GetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number") != 0;
@@ -117,29 +107,12 @@ class AS3000_MFD_MapElement extends MapInstrumentElement {
             this.lastMapMode = mapMode;
             this.lastWeatherMapMode = weatherMapMode;
         }
-		
-		// update map orientation
-		let orientation = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");
-		if (this.lastOrientation != orientation) {
-			switch (orientation) {
-			case 0:
-				this.instrument.setOrientation("hdg");
-				break;
-			case 1:
-				this.instrument.setOrientation("trk");
-				break;
-			case 2:
-				this.instrument.setOrientation("north");
-				break;
-			}
-			this.lastOrientation = orientation;
-		}
     }
 }
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
-            new AS3000_MFD_MapElement(),
+            new AS3000_MFD_MapElement("L:AS3000_MFD_Map_Orientation"),
             new AS3000_MFD_WindData()
         ]));
     }
