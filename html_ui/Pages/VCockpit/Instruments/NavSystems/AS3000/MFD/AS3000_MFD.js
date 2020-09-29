@@ -58,8 +58,8 @@ class AS3000_MFD_WindData extends MFD_WindData {
     }
 }
 class AS3000_MFD_MapElement extends AS3000_MapElement {
-    constructor(_orientationVarName) {
-        super(_orientationVarName);
+    constructor(_orientationVarName, _dcltrVarName) {
+        super(...arguments);
         this.wasOverride = false;
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;
@@ -112,7 +112,7 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
-            new AS3000_MFD_MapElement("L:AS3000_MFD_Map_Orientation"),
+            new AS3000_MFD_MapElement("L:AS3000_MFD_Map_Orientation", "L:AS3000_MFD_Map_Dcltr"),
             new AS3000_MFD_WindData()
         ]));
     }
