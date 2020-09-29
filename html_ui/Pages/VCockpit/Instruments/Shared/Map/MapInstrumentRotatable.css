@@ -54,10 +54,8 @@ map-instrument-rot {
     text-align: center; 
 	border: solid 1px white; }
   map-instrument-rot #MapSVG, map-instrument-rot #road-network-canvas {
-    transform: rotateX(0);
     position: absolute; }
   map-instrument-rot bing-map {
-    transform: rotateX(0);
     position: absolute; }
   map-instrument-rot #MapCursor {
     position: absolute;
