@@ -1,6 +1,9 @@
 class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
     constructor() {
         super();
+		this.lastShowRoads = true;
+		this.lastShowAirspaces = true;
+		this.lastShowAirways = true;
     }
 	
 	updateDraw(map) {
@@ -15,6 +18,15 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
             else
                 this._visibleCanvas.canvas.style.display = "none";
         }
+		
+		let visibilityChanged = (this.lastShowRoads != map.htmlRoot.showRoads) ||
+								(this.lastShowAirspaces != map.htmlRoot.showAirspaces) ||
+								(this.lastShowAirways != map.htmlRoot.showAirways);
+								
+		this.lastShowRoads = map.htmlRoot.showRoads;
+		this.lastShowAirspaces = map.htmlRoot.showAirspaces;
+		this.lastShowAirways = map.htmlRoot.showAirways;
+		
         this.parentWidth = map.htmlRoot.getWidth();
         this.parentHeight = map.htmlRoot.getHeight();
         if (this.parentWidth * this.parentHeight < 1) {
@@ -72,10 +84,23 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
         if (l === 0) {
             return;
         }
+		
+		if (!map.htmlRoot.showRoads && !map.htmlRoot.showAirspaces && !map.htmlRoot.showAirways) {
+			// all elements are hidden, so cleanup graphics and skip the rest of the update
+			this._iterator = 0;
+			this._visibleCanvas.context2D.clearRect(0, 0, this.canvasSize, this.canvasSize);
+            invisibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
+			this._deprecatePoints = true;
+			this._deprecatePointsIterator = 0;
+			return;
+		}
+		
         this.onLatLongChanged(map, this._lastCoords);
         let diffLastLat = Math.abs(this._lastCoords.lat - map.centerCoordinates.lat);
         let diffLastLong = Math.abs(this._lastCoords.long - map.centerCoordinates.long);
+		
         if (this._lastRange !== map.NMWidth || resized) {
+			// map was resized or map range (zoom level) was changed
             this._iterator = 0;
             this._lastRange = map.NMWidth;
             this._visibleCanvas.context2D.clearRect(0, 0, this.canvasSize, this.canvasSize);
@@ -91,7 +116,9 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
             return;
         }
         if (this._iterator >= l) {
+			// finished drawing to back buffer
             if (this._iterator !== Infinity) {
+				// screen needs to be updated from back buffer
                 let visibleContext = this._visibleCanvas.context2D;
                 visibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
                 visibleContext.drawImage(this._invisibleCanvases[this._activeInvisibleCanvasIndex].canvas, 0, 0, this.canvasSize, this.canvasSize);
@@ -100,8 +127,9 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
                 this._forcedDirection = map.rotation;
                 this.onLatLongChanged(map, this._lastCoords);
             }
-            if (this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 2) {
-                this._iterator = 0;
+            if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 2) {
+                // back buffer needs to be updated
+				this._iterator = 0;
                 this._activeInvisibleCanvasIndex = (this._activeInvisibleCanvasIndex + 1) % 2;
                 invisibleContext = this._invisibleCanvases[this._activeInvisibleCanvasIndex].context2D;
                 invisibleContext.clearRect(0, 0, this.canvasSize, this.canvasSize);
@@ -137,6 +165,13 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
         while ((performance.now() - t0) < SvgRoadNetworkElement.MAX_STALL_DRAW_ROADS && this._iterator < l) {
             let link = links.get(this._iterator++);
             if (link) {
+				
+				if ((link.type < 100 && !map.htmlRoot.showRoads) ||
+					(link.type == 101 && !map.htmlRoot.showAirways) ||
+					(link.type > 102 && !map.htmlRoot.showAirways)) {
+					continue;
+				}
+				
                 if (lastLinkType !== link.type) {
                     if (link.type === 0) {
                         invisibleContext.stroke();
@@ -219,6 +254,7 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
                         lastLinkType = link.type;
                     }
                 }
+				
                 let n1 = link.start;
                 let n2 = link.end;
                 if (!n1.isPointUpToDate) {
