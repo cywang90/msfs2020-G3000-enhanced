@@ -106,7 +106,22 @@
       "date": 132455472490000000
     },
 	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_DOWN_MINUS.png",
+      "size": 1057,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_UP_PLUS.png",
+      "size": 1057,
+      "date": 132455472490000000
+    },
+	{
       "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_HORIZ_BLUE.png",
+      "size": 1207,
+      "date": 132455472490000000
+    },
+	{
+      "path": "html_ui/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png",
       "size": 1207,
       "date": 132455472490000000
     }
