@@ -138,6 +138,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.pfdMapOrientationSelect.setGPS(this);
 		this.mfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "MFDMapOrientationSelect", new AS3000_TSC_MapOrientationSelect(["MFDMapOrientationHeading", "MFDMapOrientationTrack", "MFDMapOrientationNorth"], "MFD", "MFD Home", function() {return SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");}));
         this.mfdMapOrientationSelect.setGPS(this);
+		
+		this.mfdMapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MFDMapDetailSelect", new AS3000_TSC_MapDetailSelect("MFDMapDetailDecreaseButton", "MFDMapDetailIncreaseButton", "MFD", "MFD Home", "L:AS3000_MFD_Map_Dcltr"));
+        this.mfdMapDetailSelect.setGPS(this);
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -442,7 +445,11 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
         this.orientationButton = this.gps.getChildById("MFDMapOrientationButton");
 		this.orientationButtonValue = this.orientationButton.getElementsByClassName("lowerValue")[0];
 		
+		this.detailButton = this.gps.getChildById("MFDMapDetailButton");
+		//this.detailButtonValue = this.detailButton.getElementsByClassName("img")[0];
+		
 		this.gps.makeButton(this.orientationButton, this.openOrientationSelection.bind(this));
+		this.gps.makeButton(this.detailButton, this.openDetailSelection.bind(this));
     }
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
@@ -450,6 +457,7 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
 		this.updateOrientationValue();
+		this.updateDetailValue();
     }
     onExit() {
         this.gps.deactivateNavButton(1);
@@ -481,13 +489,27 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
 		Avionics.Utils.diffAndSet(this.orientationButtonValue, newValue);
 	}
 	
+	updateDetailValue() {
+		let currentDetail = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Detail", "number");
+	}
+	
 	openOrientationSelection() {
         this.gps.mfdMapOrientationSelect.element.setContext(this.setOrientation.bind(this));
         this.gps.switchToPopUpPage(this.gps.mfdMapOrientationSelect);
     }
+	
     setOrientation(_val) {
 		SimVar.SetSimVarValue("L:AS3000_MFD_Map_Orientation", "number", _val);
 		this.updateOrientationValue();
+    }
+	
+	openDetailSelection() {
+        this.gps.switchToPopUpPage(this.gps.mfdMapDetailSelect);
+    }
+	
+    setDetail(_val) {
+		SimVar.SetSimVarValue("L:AS3000_MFD_Map_Detail", "number", _val);
+		this.updateDetailValue();
     }
 }
 
@@ -3493,34 +3515,103 @@ class AS3000_TSC_MapOrientationSelect extends NavSystemElement {
 			this.gps.makeButton(this.buttonList[index], this.buttonClick.bind(this, index));
 		}, this);
     }
+	
     onEnter() {
         this.window.setAttribute("state", "Active");
 		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
     }
+	
     onUpdate(_deltaTime) {
 		let currentOrientation = this.simVarGetter();
 		this.buttonList.forEach(function (value, index) {
 			Avionics.Utils.diffAndSetAttribute(value, "state", (currentOrientation == index) ? "Highlight" : "");
 		});
     }
+	
     onExit() {
 		this.gps.deactivateNavButton(1);
         this.gps.deactivateNavButton(2);
         this.window.setAttribute("state", "Inactive");
     }
+	
     onEvent(_event) {
     }
+	
     setContext(_callback) {
         this.callBack = _callback;
     }
+	
     buttonClick(_source) {
         this.callBack(_source);
         this.gps.goBack();
     }
+	
 	back() {
 		this.gps.goBack();
 	}
+	
+	backHome() {
+		this.gps.goBack();
+		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+}
+
+class AS3000_TSC_MapDetailSelect extends NavSystemElement {
+	constructor(_decButtonName, _incButtonName, _homePageParent, _homePageName, _simVarName) {
+		super();
+		this.decButtonName = _decButtonName;
+		this.incButtonName = _incButtonName;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+		this.simVarName = _simVarName;
+	}
+	
+	init(root) {
+        this.window = root;
+		this.slider = root.getElementsByClassName("slider")[0];
+		this.slider.addEventListener("input", this.syncDetailToSlider.bind(this));
+		this.sliderBackground = root.getElementsByClassName("sliderBackground")[0];
+		this.decButton = this.gps.getChildById(this.decButtonName);
+		this.incButton = this.gps.getChildById(this.incButtonName);
+		
+		this.updateSlider();
+    }
+	
+    onEnter() {
+        this.window.setAttribute("state", "Active");
+		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+    }
+	
+    onUpdate(_deltaTime) {
+		this.updateSlider();
+    }
+	
+    onExit() {
+		this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.window.setAttribute("state", "Inactive");
+    }
+	
+    onEvent(_event) {
+    }
+	
+	updateSlider() {
+		let currentDetail = 3 - SimVar.GetSimVarValue(this.simVarName, "number");
+		let currentClip = Math.max(100 * (1 - currentDetail / 3), 1);
+		this.slider.value = currentDetail;
+		this.sliderBackground.style.webkitClipPath = "polygon(0 " + fastToFixed(currentClip, 0) + "%, 100% " + fastToFixed(currentClip, 0) + "%, 100% 100%, 0 100%)"; // update the range slider's track background to only show below the thumb
+	}
+	
+	syncDetailToSlider() {
+		SimVar.SetSimVarValue(this.simVarName, "number", 3 - parseInt(this.slider.value));
+	}
+	
+	back() {
+		this.gps.goBack();
+	}
+	
 	backHome() {
 		this.gps.goBack();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);

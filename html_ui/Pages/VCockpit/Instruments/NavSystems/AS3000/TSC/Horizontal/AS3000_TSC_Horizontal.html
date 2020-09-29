@@ -352,7 +352,7 @@
                         <div class="gradientButton" id="MFDMapSyncButton" state="Hidden">
                             <div class="upperTitle">Map Sync</div>
                         </div>
-                        <div class="gradientButton" id="MFDMapDetailButton" state="Hidden">
+                        <div class="gradientButton" id="MFDMapDetailButton">
                             <div class="upperTitle">Map Detail</div>
                         </div>
                     </div>
@@ -2298,6 +2298,27 @@
                             North Up
                         </div>
                     </div>
+                </div>
+            </div>
+			<div class="PopUpWindow Transparent MapDetailSelect" id="MFDMapDetailSelect" state="Inactive">
+                <div class="WindowTitle">Map Detail Settings</div>
+                <div class="Container">
+					<div class="gradientButton" id="MFDMapDetailIncreaseButton">
+						<img class="img_large" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_UP_PLUS.png" />
+					</div>
+					<div class="MapDetailSliderOuterContainer">
+						<div class="topText">Most</div>
+						<div class="MapDetailSliderWrapper">
+							<img class="sliderBackground" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MFDMapDetailSliderBackground" />
+							<div class="MapDetailSliderContainer">
+								<input type="range" min="0" max="3" class="slider" id="MFDMapDetailSlider">
+							</div>
+						</div>
+						<div class="bottomText">Least</div>
+					</div>
+					<div class="gradientButton" id="MFDMapDetailDecreaseButton">
+						<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_DOWN_MINUS.png" />
+					</div>
                 </div>
             </div>
             <div class="PopUpWindow Transparent" id="LoadFrequencyPopup" state="Inactive">
