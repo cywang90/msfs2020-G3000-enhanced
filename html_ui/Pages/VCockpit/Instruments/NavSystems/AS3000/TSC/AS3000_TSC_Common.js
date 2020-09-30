@@ -3545,6 +3545,9 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 		this.decButton = this.gps.getChildById("MapDetailDecreaseButton");
 		this.incButton = this.gps.getChildById("MapDetailIncreaseButton");
 		
+		this.gps.makeButton(this.decButton, this.changeDetail.bind(this, 1));
+		this.gps.makeButton(this.incButton, this.changeDetail.bind(this, -1));
+		
 		this.updateSlider();
     }
 	
@@ -3582,6 +3585,10 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	
 	syncDetailToSlider() {
 		SimVar.SetSimVarValue(this.simVarName, "number", 3 - parseInt(this.slider.value));
+	}
+	
+	changeDetail(_delta) {
+		SimVar.SetSimVarValue(this.simVarName, "number", Math.min(Math.max(SimVar.GetSimVarValue(this.simVarName, "number") + _delta, 0), 3));
 	}
 	
 	back() {
