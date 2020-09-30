@@ -142,7 +142,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", new AS3000_TSC_TerrainAlert()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Confirmation Window", "ConfirmationWindow", this.confirmationWindow));
 		
-		this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation", "MapOrientationSelect", new AS3000_TSC_MapOrientationSelect());
+		this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SelectionListWindow());
         this.mapOrientationSelect.setGPS(this);
 		
 		this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new AS3000_TSC_MapDetailSelect());
@@ -3590,6 +3590,64 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	changeDetail(_delta) {
 		SimVar.SetSimVarValue(this.simVarName, "number", Math.min(Math.max(SimVar.GetSimVarValue(this.simVarName, "number") + _delta, 0), 3));
 	}
+	
+	back() {
+		this.gps.goBack();
+	}
+	
+	backHome() {
+		this.gps.goBack();
+		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+}
+
+class AS3000_TSC_SelectionListWindow extends NavSystemElement {
+	init(root) {
+		this.window = root;
+		
+        this.content = root.getElementsByClassName("content")[0];
+		this.buttonList = this.content.getElementsByClassName("gradientButton");
+		
+		for (let i = 0; i < this.buttonList.length; i++) {
+			this.gps.makeButton(this.buttonList[i], this.onButtonClick.bind(this, i));
+		}
+		
+        this.scrollElement = new NavSystemTouch_ScrollElement();
+        this.scrollElement.elementContainer = this.content;
+		this.scrollElement.elementSize = this.buttonList.length > 0 ? this.buttonList[0].getBoundingClientRect().height : 0;
+    }
+	
+	onEnter() {
+		this.window.setAttribute("state", "Active");
+		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+	}
+	
+	onUpdate(_deltaTime) {
+		super.onUpdate(_deltaTime);
+		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
+		for (let i = 0; i < this.buttonList.length; i++) {
+			Avionics.Utils.diffAndSetAttribute(this.buttonList[i], "state", (currentVarValue == i) ? "Highlight" : "");
+		}
+	}
+	
+	onExit() {
+		this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+		this.window.setAttribute("state", "Inactive");
+	}
+	
+	setContext(_callback, _simVarName, _homePageParent, _homePageName) {
+		this.callback = _callback;
+		this.simVarName = _simVarName;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+	}
+	
+	onButtonClick(_id) {
+        this.callback(_id);
+		this.gps.goBack();
+    }
 	
 	back() {
 		this.gps.goBack();
