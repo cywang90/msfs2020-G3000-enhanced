@@ -139,8 +139,8 @@ class AS3000_TSC extends NavSystemTouch {
 		this.mfdMapOrientationSelect = new NavSystemElementContainer("Map Orientation", "MFDMapOrientationSelect", new AS3000_TSC_MapOrientationSelect(["MFDMapOrientationHeading", "MFDMapOrientationTrack", "MFDMapOrientationNorth"], "MFD", "MFD Home", function() {return SimVar.GetSimVarValue("L:AS3000_MFD_Map_Orientation", "number");}));
         this.mfdMapOrientationSelect.setGPS(this);
 		
-		this.mfdMapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MFDMapDetailSelect", new AS3000_TSC_MapDetailSelect("MFDMapDetailDecreaseButton", "MFDMapDetailIncreaseButton", "MFD", "MFD Home", "L:AS3000_MFD_Map_Dcltr"));
-        this.mfdMapDetailSelect.setGPS(this);
+		this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new AS3000_TSC_MapDetailSelect());
+        this.mapDetailSelect.setGPS(this);
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -507,7 +507,8 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
     }
 	
 	openDetailSelection() {
-        this.gps.switchToPopUpPage(this.gps.mfdMapDetailSelect);
+		this.gps.mapDetailSelect.element.setContext("L:AS3000_MFD_Map_Dcltr", "MFD", "MFD Home");
+        this.gps.switchToPopUpPage(this.gps.mapDetailSelect);
     }
 }
 
@@ -2916,7 +2917,11 @@ class AS3000_TSC_PFDMapSettings extends NavSystemElement {
         this.orientationButton = this.gps.getChildById("PFDMapOrientationButton");
 		this.orientationButtonValue = this.orientationButton.getElementsByClassName("lowerValue")[0];
 		
+		this.detailButton = this.gps.getChildById("PFDMapDetailButton");
+		this.detailButtonImages = this.detailButton.getElementsByClassName("img");
+		
 		this.gps.makeButton(this.orientationButton, this.openOrientationSelection.bind(this));
+		this.gps.makeButton(this.detailButton, this.openDetailSelection.bind(this));
     }
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
@@ -2924,6 +2929,7 @@ class AS3000_TSC_PFDMapSettings extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
 		this.updateOrientationValue();
+		this.updateDetailValue();
     }
     onExit() {
         this.gps.deactivateNavButton(1);
@@ -2955,14 +2961,27 @@ class AS3000_TSC_PFDMapSettings extends NavSystemElement {
 		Avionics.Utils.diffAndSet(this.orientationButtonValue, newValue);
 	}
 	
+	updateDetailValue() {
+		let currentDetail = SimVar.GetSimVarValue("L:AS3000_PFD_Map_Dcltr", "number");
+		for (let i = 0; i < this.detailButtonImages.length; i++) {
+			Avionics.Utils.diffAndSetAttribute(this.detailButtonImages[i], "state", (currentDetail == i) ? "Active" : "Inactive");
+		}
+	}
+	
 	openOrientationSelection() {
         this.gps.pfdMapOrientationSelect.element.setContext(this.setOrientation.bind(this));
         this.gps.switchToPopUpPage(this.gps.pfdMapOrientationSelect);
     }
+	
     setOrientation(_val) {
 		SimVar.SetSimVarValue("L:AS3000_PFD_Map_Orientation", "number", _val);
 		this.updateOrientationValue();
     }
+	
+	openDetailSelection() {
+		this.gps.mapDetailSelect.element.setContext("L:AS3000_PFD_Map_Dcltr", "PFD", "PFD Home");
+        this.gps.switchToPopUpPage(this.gps.mapDetailSelect);
+	}
 }
 
 class AS3000_TSC_PFDSettings extends NavSystemElement {
@@ -3556,22 +3575,13 @@ class AS3000_TSC_MapOrientationSelect extends NavSystemElement {
 }
 
 class AS3000_TSC_MapDetailSelect extends NavSystemElement {
-	constructor(_decButtonName, _incButtonName, _homePageParent, _homePageName, _simVarName) {
-		super();
-		this.decButtonName = _decButtonName;
-		this.incButtonName = _incButtonName;
-		this.homePageParent = _homePageParent;
-		this.homePageName = _homePageName;
-		this.simVarName = _simVarName;
-	}
-	
 	init(root) {
         this.window = root;
 		this.slider = root.getElementsByClassName("slider")[0];
 		this.slider.addEventListener("input", this.syncDetailToSlider.bind(this));
 		this.sliderBackground = root.getElementsByClassName("sliderBackground")[0];
-		this.decButton = this.gps.getChildById(this.decButtonName);
-		this.incButton = this.gps.getChildById(this.incButtonName);
+		this.decButton = this.gps.getChildById("MapDetailDecreaseButton");
+		this.incButton = this.gps.getChildById("MapDetailIncreaseButton");
 		
 		this.updateSlider();
     }
@@ -3594,6 +3604,12 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	
     onEvent(_event) {
     }
+	
+	setContext(_simVarName, _homePageParent, _homePageName) {
+		this.simVarName = _simVarName;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+	}
 	
 	updateSlider() {
 		let currentDetail = 3 - SimVar.GetSimVarValue(this.simVarName, "number");

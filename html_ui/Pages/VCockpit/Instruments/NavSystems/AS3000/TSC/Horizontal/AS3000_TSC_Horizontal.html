@@ -206,8 +206,8 @@
                         </table>
                     </div>
                 </div>
-				<div id="PFDMapSettings">
-                    <div id="PFDMapSettingsLeft">
+				<div class="MapSettings" id="PFDMapSettings">
+                    <div class="MapSettingsLeft" id="PFDMapSettingsLeft">
                         <div class="gradientButton" id="PFDMapOrientationButton">
                             <div class="upperTitle">Orientation</div>
 							<div class="lowerValue"></div>
@@ -215,8 +215,12 @@
                         <div class="gradientButton" id="PFDMapSyncButton" state="Hidden">
                             <div class="upperTitle">Map Sync</div>
                         </div>
-                        <div class="gradientButton" id="PFDMapDetail" state="Hidden">
+                        <div class="gradientButton MapDetailButton" id="PFDMapDetailButton">
                             <div class="upperTitle">Map Detail</div>
+							<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAPDETAIL_SMALL_4.png" state="Active"/>
+							<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAPDETAIL_SMALL_3.png" state="Active"/>
+							<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAPDETAIL_SMALL_2.png" state="Active"/>
+							<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAPDETAIL_SMALL_1.png" state="Active"/>
                         </div>
                     </div>
                 </div>
@@ -2304,23 +2308,23 @@
                     </div>
                 </div>
             </div>
-			<div class="PopUpWindow Transparent MapDetailSelect" id="MFDMapDetailSelect" state="Inactive">
+			<div class="PopUpWindow Transparent MapDetailSelect" id="MapDetailSelect" state="Inactive">
                 <div class="WindowTitle">Map Detail Settings</div>
                 <div class="Container">
-					<div class="gradientButton" id="MFDMapDetailIncreaseButton">
+					<div class="gradientButton" id="MapDetailIncreaseButton">
 						<img class="img_large" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_UP_PLUS.png" />
 					</div>
 					<div class="MapDetailSliderOuterContainer">
 						<div class="topText">Most</div>
 						<div class="MapDetailSliderWrapper">
-							<img class="sliderBackground" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MFDMapDetailSliderBackground" />
+							<img class="sliderBackground" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MapDetailSliderBackground" />
 							<div class="MapDetailSliderContainer">
-								<input type="range" min="0" max="3" class="slider" id="MFDMapDetailSlider">
+								<input type="range" min="0" max="3" class="slider" id="MapDetailSlider">
 							</div>
 						</div>
 						<div class="bottomText">Least</div>
 					</div>
-					<div class="gradientButton" id="MFDMapDetailDecreaseButton">
+					<div class="gradientButton" id="MapDetailDecreaseButton">
 						<img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_DOWN_MINUS.png" />
 					</div>
                 </div>
