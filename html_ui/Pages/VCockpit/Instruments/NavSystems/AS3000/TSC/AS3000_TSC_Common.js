@@ -744,7 +744,7 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
 		SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", parseInt(this.slider.value) / 100.0);
 	}
 	changeLighting(_delta) {
-		SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") + _delta);
+		SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", Math.min(Math.max(SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") + _delta, 1), 100));
 	}
 }
 
