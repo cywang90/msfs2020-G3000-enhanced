@@ -3599,7 +3599,7 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	
 	updateSlider() {
 		let currentDetail = 3 - SimVar.GetSimVarValue(this.simVarName, "number");
-		let currentClip = Math.max(100 * (1 - currentDetail / 3), 1);
+		let currentClip = Math.min(100 * (1 - currentDetail / 3), 99);
 		this.slider.value = currentDetail;
 		this.sliderBackground.style.webkitClipPath = "polygon(0 " + fastToFixed(currentClip, 0) + "%, 100% " + fastToFixed(currentClip, 0) + "%, 100% 100%, 0 100%)"; // update the range slider's track background to only show below the thumb
 	}
