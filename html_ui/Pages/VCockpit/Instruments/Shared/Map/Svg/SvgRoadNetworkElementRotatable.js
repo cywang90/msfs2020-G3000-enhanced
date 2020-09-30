@@ -127,7 +127,7 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
                 this._forcedDirection = map.rotation;
                 this.onLatLongChanged(map, this._lastCoords);
             }
-            if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 2) {
+            if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 0.1) {
                 // back buffer needs to be updated
 				this._iterator = 0;
                 this._activeInvisibleCanvasIndex = (this._activeInvisibleCanvasIndex + 1) % 2;
@@ -277,8 +277,8 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
                 }
                 if (n1 && n2) {
                     if (n1.isInFrame || n2.isInFrame) {
-                        invisibleContext.moveTo(Math.round(n1.x), Math.round(n1.y));
-                        invisibleContext.lineTo(Math.round(n2.x), Math.round(n2.y));
+                        invisibleContext.moveTo(n1.x, n1.y);
+                        invisibleContext.lineTo(n2.x, n2.y);
                     }
                 }
             }
@@ -293,18 +293,22 @@ class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
         p.y -= this.svgMapSize * 0.5;
         p.x *= this.displayedSize / this.svgMapSize;
         p.y *= this.displayedSize / this.svgMapSize;
-        let top = Math.round(p.y);
-        let left = Math.round(p.x);
+        let top = p.y;
+        let left = p.x;
         if (this.parentHeight < this.canvasSize) {
-            top = Math.round((this.parentHeight - this.canvasSize) * 0.5 + p.y);
+            top = (this.parentHeight - this.canvasSize) * 0.5 + p.y;
         }
         if (this.parentWidth < this.canvasSize) {
-            left = Math.round((this.parentWidth - this.canvasSize) * 0.5 + p.x);
+            left = (this.parentWidth - this.canvasSize) * 0.5 + p.x;
         }
         let deltaRotation = 0;
         if (_map.orientation != "north") {
             deltaRotation = _map.rotation - this._forcedDirection;
         }
         this.translateCanvas(this._visibleCanvas.canvas, left, top, deltaRotation);
+    }
+	
+	translateCanvas(_canvas, _x, _y, _rotation) {
+        _canvas.style.transform = "translate(" + _x + "px, " + _y + "px) rotate(" + _rotation + "deg)";
     }
 }
