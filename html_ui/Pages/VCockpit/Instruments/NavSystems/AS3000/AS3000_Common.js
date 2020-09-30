@@ -1,10 +1,10 @@
 class AS3000_MapElement extends MapInstrumentElement {
-    constructor(_orientationVarName, _dcltrVarName) {
+    constructor(_varNameID) {
         super();
-		this.orientationVarName = _orientationVarName;
-		this.dcltrVarName = _dcltrVarName;
+		this.varNameID = _varNameID;
 		
 		this.lastOrientation = 0;
+		this.lastSync = 0;
 		this.lastDcltr = 0;
     }
 	
@@ -15,8 +15,8 @@ class AS3000_MapElement extends MapInstrumentElement {
                 this.onTemplateLoaded();
             });
         }
-		SimVar.SetSimVarValue(this.orientationVarName, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
-		SimVar.SetSimVarValue(this.dcltrVarName, "number", 0);			// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.varNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number", 0);		// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
 		this.initDcltrSettings();
     }
 	
@@ -67,12 +67,33 @@ class AS3000_MapElement extends MapInstrumentElement {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
 		
-		this.updateOrientation();
-		this.updateDcltr();
+		let sync = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number");
+		if (sync != this.lastSync) {
+			if (sync == 1) {
+				// Sync All
+				let initID = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "string");
+				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + initID, "number"));
+				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + initID, "number"));
+			}
+			this.lastSync = sync;
+		}
+		this.syncSettings(sync);
+		
+		let id = (sync == 1) ? AS3000_MapElement.VARNAME_SYNC_ALL_ID : this.varNameID;
+		this.updateOrientation(id);
+		this.updateDcltr(id);
     }
 	
-	updateOrientation() {
-		let orientation = SimVar.GetSimVarValue(this.orientationVarName, "number");
+	syncSettings(_sync) {
+		if (_sync == 1) {
+			// Sync All
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.varNameID, "number");
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number");
+		}
+	}
+	
+	updateOrientation(_id) {
+		let orientation = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + _id, "number");
 		if (this.lastOrientation != orientation) {
 			switch (orientation) {
 			case 0:
@@ -89,8 +110,8 @@ class AS3000_MapElement extends MapInstrumentElement {
 		}
 	}
 	
-	updateDcltr() {
-		let dcltr = SimVar.GetSimVarValue(this.dcltrVarName, "number");
+	updateDcltr(_id) {
+		let dcltr = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + _id, "number");
 		if (this.lastDcltr != dcltr) {
 			let settings = this.getDcltrSettings(dcltr);
 			
@@ -107,3 +128,8 @@ class AS3000_MapElement extends MapInstrumentElement {
 		return this.dcltrSettings[_level];
 	}
 }
+AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
+AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
+AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";
+AS3000_MapElement.VARNAME_DETAIL_ROOT = "L:AS3000_Map_Dcltr";
+AS3000_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
