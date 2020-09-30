@@ -446,7 +446,7 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
 		this.orientationButtonValue = this.orientationButton.getElementsByClassName("lowerValue")[0];
 		
 		this.detailButton = this.gps.getChildById("MFDMapDetailButton");
-		//this.detailButtonValue = this.detailButton.getElementsByClassName("img")[0];
+		this.detailButtonImages = this.detailButton.getElementsByClassName("img");
 		
 		this.gps.makeButton(this.orientationButton, this.openOrientationSelection.bind(this));
 		this.gps.makeButton(this.detailButton, this.openDetailSelection.bind(this));
@@ -490,7 +490,10 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
 	}
 	
 	updateDetailValue() {
-		let currentDetail = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Detail", "number");
+		let currentDetail = SimVar.GetSimVarValue("L:AS3000_MFD_Map_Dcltr", "number");
+		for (let i = 0; i < this.detailButtonImages.length; i++) {
+			Avionics.Utils.diffAndSetAttribute(this.detailButtonImages[i], "state", (currentDetail == i) ? "Active" : "Inactive");
+		}
 	}
 	
 	openOrientationSelection() {
@@ -505,11 +508,6 @@ class AS3000_TSC_MFDMapSettings extends NavSystemElement {
 	
 	openDetailSelection() {
         this.gps.switchToPopUpPage(this.gps.mfdMapDetailSelect);
-    }
-	
-    setDetail(_val) {
-		SimVar.SetSimVarValue("L:AS3000_MFD_Map_Detail", "number", _val);
-		this.updateDetailValue();
     }
 }
 

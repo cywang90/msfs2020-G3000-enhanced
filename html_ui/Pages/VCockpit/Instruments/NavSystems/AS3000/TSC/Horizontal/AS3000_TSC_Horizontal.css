@@ -316,7 +316,7 @@ as3000-tsc-horizontal-element {
           height: 15vh; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .SelectionMenu[state=Inactive] {
           display: none; }
-	  as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDMapSettings #MFDMapSettingsLeft {
+	  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
 	    position: absolute;
 		top: 5%;
 		left: 2.5%;
@@ -325,8 +325,19 @@ as3000-tsc-horizontal-element {
 		flex-flow: column nowrap;
 		justify-content: space-between;
 		align-items: center; }
-		as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDMapSettings #MFDMapSettingsLeft .gradientButton {
-		  width: 100%; }
+		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .gradientButton {
+		  width: 100%; 
+		  margin: 1vh 0; }
+		as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton {
+		  max-height: 25vh;
+		  height: 25vh; }
+		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img {
+		    position: absolute;
+			left: 25%;
+			width: 50%;
+		    bottom: 5%; }
+		  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
+		    visibility: hidden; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo #SelectionTabs {
         position: absolute;
         top: 2.5%;
