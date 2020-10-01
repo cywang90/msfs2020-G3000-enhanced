@@ -1,4 +1,4 @@
-class MapInstrumentRotatable extends MapInstrument {
+class MapInstrumentEnhanced extends MapInstrument {
 	constructor() {
 		super();
 		
@@ -59,7 +59,7 @@ class MapInstrumentRotatable extends MapInstrument {
         }
         SimVar.SetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number", -1);
         if (this.eBingMode !== EBingMode.HORIZON) {
-            this.navMap = new SvgMapRotatable(this, { svgElement: this.getElementsByTagName("svg")[0], configPath: this.configPath });
+            this.navMap = new SvgMapEnhanced(this, { svgElement: this.getElementsByTagName("svg")[0], configPath: this.configPath });
             this.navMap.lineCanvas = this.lineCanvas;
             var mapSVG = this.querySelector("#MapSVG");
             mapSVG.setAttribute("display", "visible");
@@ -80,7 +80,7 @@ class MapInstrumentRotatable extends MapInstrument {
             this.mapNearestNDBList = new NearestNDBList(this.instrument);
             this.mapNearestVorList = new NearestVORList(this.instrument);
             this.testAirspaceList = new NearestAirspaceList(this.instrument);
-            this.roadNetwork = new SvgRoadNetworkElementRotatable();
+            this.roadNetwork = new SvgRoadNetworkElementEnhanced();
             this.cityManager = new SvgCityManager(this.navMap);
             this.airwayIterator = 0;
             this.airspaceIterator = 0;
@@ -112,8 +112,8 @@ class MapInstrumentRotatable extends MapInstrument {
                     });
                 }
             };
-            this.npcAirplaneManager = new NPCAirplaneRotatableManager();
-            this.airplaneIconElement = new SvgAirplaneElementRotatable();
+            this.npcAirplaneManager = new NPCAirplaneManagerEnhanced();
+            this.airplaneIconElement = new SvgAirplaneElementEnhanced();
             this.flightPlanElement = new SvgFlightPlanElement();
             this.flightPlanElement.source = this.flightPlanManager;
             this.flightPlanElement.flightPlanIndex = 0;
@@ -612,7 +612,7 @@ class MapInstrumentRotatable extends MapInstrument {
 		Avionics.Utils.diffAndSet(this.mapOrientationElement, this.orientation.toUpperCase() + " UP");
 	}
 	
-	get templateID() { return "MapInstrumentRotatableTemplate"; }
+	get templateID() { return "MapInstrumentEnhancedTemplate"; }
 	
 	// adapt this method to the new orientation model for compatibility purposes
 	rotateWithPlane(_val) {
@@ -652,5 +652,5 @@ class MapInstrumentRotatable extends MapInstrument {
 		}
     }
 }
-customElements.define("map-instrument-rot", MapInstrumentRotatable);
+customElements.define("map-instrument-enhanced", MapInstrumentEnhanced);
 checkAutoload();

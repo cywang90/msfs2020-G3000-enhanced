@@ -66,32 +66,32 @@
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.css",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentEnhanced.css",
       "size": 1819,
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.html",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentEnhanced.html",
       "size": 4535,
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentRotatable.js",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentEnhanced.js",
       "size": 64393,
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirplaneElementRotatable.js",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgAirplaneElementEnhanced.js",
       "size": 22648,
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgMapRotatable.js",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgMapEnhanced.js",
       "size": 22648,
       "date": 132455472490000000
     },
 	{
-      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadNetworkElementRotatable.js",
+      "path": "html_ui/Pages/VCockpit/Instruments/Shared/Map/Svg/SvgRoadNetworkElementEnhanced.js",
       "size": 22648,
       "date": 132455472490000000
     },

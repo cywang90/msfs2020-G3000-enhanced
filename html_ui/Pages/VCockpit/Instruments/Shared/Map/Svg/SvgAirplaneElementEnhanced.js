@@ -1,4 +1,4 @@
-class SvgAirplaneElementRotatable extends SvgAirplaneElement {
+class SvgAirplaneElementEnhanced extends SvgAirplaneElement {
     constructor() {
         super();
     }
@@ -42,7 +42,7 @@ class SvgAirplaneElementRotatable extends SvgAirplaneElement {
     }
 }
 
-class NPCAirplaneRotatableManager {
+class NPCAirplaneManagerEnhanced {
     constructor() {
         this.npcAirplanes = [];
         this.useTCAS = false;
@@ -61,7 +61,7 @@ class NPCAirplaneRotatableManager {
                     let data = obj[i];
                     let npcAirplane = this.npcAirplanes.find(p => { return p.name === data.uId.toFixed(0); });
                     if (!npcAirplane) {
-                        npcAirplane = new SvgNPCAirplaneElementRotatable(data.uId.toFixed(0));
+                        npcAirplane = new SvgNPCAirplaneElementEnhanced(data.uId.toFixed(0));
                         npcAirplane.useTCAS = this.useTCAS;
                         this.npcAirplanes.push(npcAirplane);
                     }
@@ -113,7 +113,7 @@ class NPCAirplaneRotatableManager {
     }
 }
 
-class SvgNPCAirplaneElementRotatable extends SvgNPCAirplaneElement {
+class SvgNPCAirplaneElementEnhanced extends SvgNPCAirplaneElement {
     constructor(name = "") {
         super(name);
     }

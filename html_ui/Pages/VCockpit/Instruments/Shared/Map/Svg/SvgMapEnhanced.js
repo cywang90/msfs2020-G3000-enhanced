@@ -1,4 +1,4 @@
-class SvgMapRotatable extends SvgMap {
+class SvgMapEnhanced extends SvgMap {
     constructor(_root, arg) {
 		super(_root, arg);
 		

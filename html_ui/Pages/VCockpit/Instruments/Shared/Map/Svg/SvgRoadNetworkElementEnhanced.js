@@ -1,4 +1,4 @@
-class SvgRoadNetworkElementRotatable extends SvgRoadNetworkElement {
+class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
     constructor() {
         super();
 		this.lastShowRoads = true;
