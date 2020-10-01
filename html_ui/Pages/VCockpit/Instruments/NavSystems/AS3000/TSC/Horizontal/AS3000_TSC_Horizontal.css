@@ -2039,7 +2039,8 @@ as3000-tsc-horizontal-element {
       bottom: 5%;
       background-color: black;
       padding: 2%;
-      border: 0.4vh solid white; }
+      border: 0.4vh solid white; 
+	  overflow-y: scroll; }
 	  as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar {
         width: 0.5vw; }
       as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar-track {
