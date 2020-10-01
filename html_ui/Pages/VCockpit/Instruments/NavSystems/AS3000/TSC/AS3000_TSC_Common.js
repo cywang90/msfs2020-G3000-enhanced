@@ -3684,7 +3684,7 @@ class AS3000_TSC_TabbedContent {
 		for (let i = 0; i < this.tabButtons.length; i++) {
 			this.parentElement.gps.makeButton(this.tabButtons[i], this.onTabButtonClick.bind(this, i));
 		}
-		this.activeTab = 0;
+		this.activeTab = 2;
 	}
 	
 	getActiveTab() {
@@ -3692,7 +3692,7 @@ class AS3000_TSC_TabbedContent {
 	}
 	
 	activateTab(_id) {
-		if (this.activeTab != _id) {
+		if (this.activeTab != _id && this.tabButtons[_id].getAttribute("state")	!= "Disabled") {
 			Avionics.Utils.diffAndSetAttribute(this.tabContent[this.activeTab], "state", "Inactive");
 			Avionics.Utils.diffAndSetAttribute(this.tabButtons[this.activeTab], "state", "");
 			this.tabCloseCallback(this.activeTab);
