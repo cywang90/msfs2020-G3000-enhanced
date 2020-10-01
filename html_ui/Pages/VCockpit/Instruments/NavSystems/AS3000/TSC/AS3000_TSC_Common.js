@@ -3382,7 +3382,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		_homePageParent, _homePageName, _simVarNameID,
 		_orientationButtonName,
 		_syncButtonName,
-		_detailButtonName,
+		_detailButtonName
 	) {
 		super();
 		this.homePageParent = _homePageParent;
@@ -3529,7 +3529,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 	setSync(_val) {
 		if (SimVar.GetSimVarValue(this.syncSimVarName, "number") != _val) {
 			SimVar.SetSimVarValue(this.syncSimVarName, "number", _val);
-			SimVar.SetSimVarValue(this.syncInitVarName, "string", this.simVarNameID);
+			SimVar.SetSimVarValue(this.syncInitVarName, "number", AS3000_MapElement.getSyncInitIDIndex(this.simVarNameID));
 		}
 		this.updateSyncValue();
 	}

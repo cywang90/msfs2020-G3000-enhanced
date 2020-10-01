@@ -71,9 +71,9 @@ class AS3000_MapElement extends MapInstrumentElement {
 		if (sync != this.lastSync) {
 			if (sync == 1) {
 				// Sync All
-				let initID = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "string");
-				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + "_PFD", "number"));
-				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + "_PFD", "number"));
+				let initID = AS3000_MapElement.SYNC_INITID_ARRAY[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number")];
+				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + initID, "number"));
+				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + initID, "number"));
 			}
 			this.lastSync = sync;
 		}
@@ -126,9 +126,14 @@ class AS3000_MapElement extends MapInstrumentElement {
 	getDcltrSettings(_level) {
 		return this.dcltrSettings[_level];
 	}
+	
+	static getSyncInitIDIndex(_id) {
+		return AS3000_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
+	}
 }
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
-AS3000_MapElement.VARNAME_SYNC_INITID = "AS3000_Map_Sync_InitID";
+AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";
+AS3000_MapElement.SYNC_INITID_ARRAY = ["_PFD", "_MFD"];						// horrible hack because I can't get SetSimVar to work for strings
 AS3000_MapElement.VARNAME_DETAIL_ROOT = "L:AS3000_Map_Dcltr";
 AS3000_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
