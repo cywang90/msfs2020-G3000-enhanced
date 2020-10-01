@@ -55,6 +55,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.initDuration = 4000;
 		
 		SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
+		SimVar.SetSimVarValue("L:AS3000_Map_Sync", "number", 0); // initialize map sync variable: 0 = off, 1 = all
     }
     get templateID() { return "AS3000_TSC"; }
     connectedCallback() {
@@ -68,18 +69,20 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Timers", "Timers", this.timer),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
 				new NavSystemPage("PFD Map Settings", "PFDMapSettings", new AS3000_TSC_MapSettings(
-					"PFD", "PFD Home",
-					"PFDMapOrientationButton", "L:AS3000_PFD_Map_Orientation",
-					"PFDMapDetailButton", "L:AS3000_PFD_Map_Dcltr"
+					"PFD", "PFD Home", "_PFD",
+					"PFDMapOrientationButton",
+					"PFDMapSyncButton",
+					"PFDMapDetailButton"
 				)),
                 new NavSystemPage("PFD Settings", "PFDSettings", new AS3000_TSC_PFDSettings()),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
 				new NavSystemPage("Map Settings", "MFDMapSettings", new AS3000_TSC_MapSettings(
-					"MFD", "MFD Home",
-					"MFDMapOrientationButton", "L:AS3000_MFD_Map_Orientation",
-					"MFDMapDetailButton", "L:AS3000_MFD_Map_Dcltr"
+					"MFD", "MFD Home", "_MFD",
+					"MFDMapOrientationButton",
+					"MFDMapSyncButton",
+					"MFDMapDetailButton"
 				)),
 				//new NavSystemPage("Weather", "WeatherSettings", new AS3000_TSC_WeatherSettings()),
                 new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
@@ -144,6 +147,9 @@ class AS3000_TSC extends NavSystemTouch {
 		
 		this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SelectionListWindow());
         this.mapOrientationSelect.setGPS(this);
+		
+		this.mapSyncSelect = new NavSystemElementContainer("Map Sync Settings", "MapSyncSelect", new AS3000_TSC_SelectionListWindow());
+        this.mapSyncSelect.setGPS(this);
 		
 		this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new AS3000_TSC_MapDetailSelect());
         this.mapDetailSelect.setGPS(this);
@@ -3373,23 +3379,28 @@ class AS3000_MapPointerControl extends NavSystemElement {
 
 class AS3000_TSC_MapSettings extends NavSystemElement {
 	constructor(
-		_homePageParent, _homePageName,
-		_orientationButtonName, _orientationSimVarName,
-		_detailButtonName, _detailSimVarName
+		_homePageParent, _homePageName, _varNameID,
+		_orientationButtonName,
+		_syncButtonName,
+		_detailButtonName,
 	) {
 		super();
 		this.homePageParent = _homePageParent;
 		this.homePageName = _homePageName;
+		this.varNameID = _varNameID;
 		this.orientationButtonName = _orientationButtonName;
-		this.orientationSimVarName = _orientationSimVarName;
+		this.orientationSimVarName = AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.varNameID;
+		this.syncButtonName = _syncButtonName;
+		this.syncVarName = AS3000_MapElement.VARNAME_SYNC;
 		this.detailButtonName = _detailButtonName;
-		this.detailSimVarName = _detailSimVarName;
+		this.detailSimVarName = AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID;
 		
 		this.updateCallbacks = [];
 	}
 	
     init(root) {
         this.initOrientationSetting();
+		this.initSyncSetting();
 		this.initDetailSetting();
     }
 	
@@ -3399,6 +3410,15 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 			this.orientationButtonValue = this.orientationButton.getElementsByClassName("lowerValue")[0];
 			this.gps.makeButton(this.orientationButton, this.openOrientationSelection.bind(this));
 			this.updateCallbacks.push(this.updateOrientationValue.bind(this));
+		}
+	}
+	
+	initSyncSetting() {
+		this.syncButton = this.gps.getChildById(this.syncButtonName);
+		if (this.syncButton) {
+			this.syncButtonValue = this.syncButton.getElementsByClassName("lowerValue")[0];
+			this.gps.makeButton(this.syncButton, this.openSyncSelection.bind(this));
+			this.updateCallbacks.push(this.updateSyncValue.bind(this));
 		}
 	}
 	
@@ -3438,6 +3458,8 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
     }
 	
+	// update helpers
+	
 	updateOrientationValue() {
 		let currentOrientation = SimVar.GetSimVarValue(this.orientationSimVarName, "number");
 		let newValue = "";
@@ -3455,6 +3477,20 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		Avionics.Utils.diffAndSet(this.orientationButtonValue, newValue);
 	}
 	
+	updateSyncValue() {
+		let currentSync = SimVar.GetSimVarValue(this.syncSimVarName, "number");
+		let newValue = "";
+		switch (currentSync) {
+			case 0:
+                newValue = "Off";
+                break;
+            case 1:
+                newValue = "All";
+                break;
+		}
+		Avionics.Utils.diffAndSet(this.syncButtonValue, newValue);
+	}
+	
 	updateDetailValue() {
 		let currentDetail = SimVar.GetSimVarValue(this.detailSimVarName, "number");
 		for (let i = 0; i < this.detailButtonImages.length; i++) {
@@ -3462,77 +3498,36 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		}
 	}
 	
+	// button click callbacks
+	
 	openOrientationSelection() {
         this.gps.mapOrientationSelect.element.setContext(this.setOrientation.bind(this), this.orientationSimVarName, this.homePageParent, this.homePageName);
         this.gps.switchToPopUpPage(this.gps.mapOrientationSelect);
     }
 	
-    setOrientation(_val) {
-		SimVar.SetSimVarValue(this.orientationSimVarName, "number", _val);
-		this.updateOrientationValue();
+	openSyncSelection() {
+        this.gps.mapSyncSelect.element.setContext(this.setSync.bind(this), this.syncSimVarName, this.homePageParent, this.homePageName);
+        this.gps.switchToPopUpPage(this.gps.mapSyncSelect);
     }
 	
 	openDetailSelection() {
-		this.gps.mapDetailSelect.element.setContext(this.detailSimVarName, this.homePageParent, this.homePageName);
+		this.gps.mapDetailSelect.element.setContext(this.varNameID, this.homePageParent, this.homePageName);
         this.gps.switchToPopUpPage(this.gps.mapDetailSelect);
 	}
-}
-
-class AS3000_TSC_MapOrientationSelect extends NavSystemElement {
-	init(root) {
-        this.window = root;
-		
-		this.buttonList = [
-			this.gps.getChildById("MapOrientationHeading"),
-			this.gps.getChildById("MapOrientationTrack"),
-			this.gps.getChildById("MapOrientationNorth")
-		];
-		for (let i = 0; i < this.buttonList.length; i++) {
-			this.gps.makeButton(this.buttonList[i], this.buttonClick.bind(this, i));
+	
+	// setter helpers
+	
+	setOrientation(_val) {
+		SimVar.SetSimVarValue(this.orientationSimVarName, "number", _val);
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", _val);
 		}
+		this.updateOrientationValue();
     }
 	
-    onEnter() {
-        this.window.setAttribute("state", "Active");
-		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-    }
-	
-    onUpdate(_deltaTime) {
-		let currentOrientation = SimVar.GetSimVarValue(this.simVarName, "number");
-		for (let i = 0; i < this.buttonList.length; i++) {
-			Avionics.Utils.diffAndSetAttribute(this.buttonList[i], "state", (currentOrientation == i) ? "Highlight" : "");
-		}
-    }
-	
-    onExit() {
-		this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.window.setAttribute("state", "Inactive");
-    }
-	
-    onEvent(_event) {
-    }
-	
-    setContext(_callback, _simVarName, _homePageParent, _homePageName) {
-        this.callBack = _callback;
-		this.simVarName = _simVarName;
-		this.homePageParent = _homePageParent;
-		this.homePageName = _homePageName;
-    }
-	
-    buttonClick(_val) {
-        this.callBack(_val);
-        this.gps.goBack();
-    }
-	
-	back() {
-		this.gps.goBack();
-	}
-	
-	backHome() {
-		this.gps.goBack();
-		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	setSync(_val) {
+		SimVar.SetSimVarValue(this.syncVarName, "number", _val);
+		this.updateSyncValue();
 	}
 }
 
@@ -3570,25 +3565,33 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
     onEvent(_event) {
     }
 	
-	setContext(_simVarName, _homePageParent, _homePageName) {
-		this.simVarName = _simVarName;
+	setContext(_varNameID, _homePageParent, _homePageName) {
+		this.varNameID = _varNameID;
 		this.homePageParent = _homePageParent;
 		this.homePageName = _homePageName;
 	}
 	
 	updateSlider() {
-		let currentDetail = 3 - SimVar.GetSimVarValue(this.simVarName, "number");
+		let currentDetail = 3 - SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number");
 		let currentClip = Math.min(100 * (1 - currentDetail / 3), 99);
 		this.slider.value = currentDetail;
 		this.sliderBackground.style.webkitClipPath = "polygon(0 " + fastToFixed(currentClip, 0) + "%, 100% " + fastToFixed(currentClip, 0) + "%, 100% 100%, 0 100%)"; // update the range slider's track background to only show below the thumb
 	}
 	
 	syncDetailToSlider() {
-		SimVar.SetSimVarValue(this.simVarName, "number", 3 - parseInt(this.slider.value));
+		let val = 3 - parseInt(this.slider.value);
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number", val);
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", val);
+		}
 	}
 	
 	changeDetail(_delta) {
-		SimVar.SetSimVarValue(this.simVarName, "number", Math.min(Math.max(SimVar.GetSimVarValue(this.simVarName, "number") + _delta, 0), 3));
+		let newValue = Math.min(Math.max(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number") + _delta, 0), 3);
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.varNameID, "number", newValue);
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", newValue);
+		}
 	}
 	
 	back() {
