@@ -9,6 +9,8 @@ class MapInstrumentRotatable extends MapInstrument {
 		 * north: North up
 		 */
 		this.orientation = "hdg";
+		
+		this.rotation = 0; // current rotation of map, in degrees
 	}
 	
 	init(arg) {
@@ -515,15 +517,17 @@ class MapInstrumentRotatable extends MapInstrument {
                 this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
                 if (this.bingMap) {
                     let transform = "";
-					if (!this.isDisplayingWeatherRadar() && this.orientation != "north") {
+					if (!this.isDisplayingWeatherRadar()) {
+						var roundedCompass = 0;
 						if (this.orientation == "hdg") {
-							var roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
+							roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
 						} else if (this.orientation == "trk") {
-							var roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 3);
+							roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 3);
 						}
 						transform = "rotate(" + -roundedCompass + "deg)";
 					}
 					this.bingMap.style.transform = transform;
+					this.rotation = -roundedCompass;
                 }
             }
             else {

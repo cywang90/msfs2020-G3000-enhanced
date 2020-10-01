@@ -31,8 +31,9 @@ class AS3000_MFD extends NavSystem {
     }
 }
 class AS3000_MFD_WindData extends MFD_WindData {
-    constructor() {
-        super(...arguments);
+    constructor(_mapElement) {
+        super();
+		this.mapElement = _mapElement;
     }
     init(root) {
         super.init(root);
@@ -40,7 +41,11 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var wind = fastToFixed((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360, 0); // fix for MFD wind direction bug
+        var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
+		
+		// compensate for map rotation
+		wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
+		
         if (wind != this.windValue) {
             this.svg.setAttribute("wind-direction", wind);
             this.windValue = wind;
@@ -111,9 +116,10 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
 }
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
+		let mapElement = new AS3000_MFD_MapElement("_MFD");
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
-            new AS3000_MFD_MapElement("_MFD"),
-            new AS3000_MFD_WindData()
+            mapElement,
+            new AS3000_MFD_WindData(mapElement)
         ]));
     }
     init() {
