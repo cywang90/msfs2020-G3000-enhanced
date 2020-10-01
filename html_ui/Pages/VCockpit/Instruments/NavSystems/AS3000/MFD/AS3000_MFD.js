@@ -112,7 +112,7 @@ class AS3000_MFD_MapElement extends AS3000_MapElement {
 class AS3000_MFD_MainMap extends NavSystemPage {
     constructor() {
         super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
-            new AS3000_MFD_MapElement("_MFD"),
+            new AS3000_MFD_MapElement("L:AS3000_MFD_Map_Orientation", "L:AS3000_MFD_Map_Dcltr"),
             new AS3000_MFD_WindData()
         ]));
     }
