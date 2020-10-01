@@ -58,8 +58,8 @@ class AS3000_MFD_WindData extends MFD_WindData {
     }
 }
 class AS3000_MFD_MapElement extends AS3000_MapElement {
-    constructor(_orientationVarName, _dcltrVarName) {
-        super(...arguments);
+    constructor(_simVarNameID) {
+        super(_simVarNameID);
         this.wasOverride = false;
         this.lastMapMode = 0;
         this.lastWeatherMapMode = 0;

@@ -61,8 +61,8 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
     }
 }
 class AS3000_PFD_InnerMap extends AS3000_MapElement {
-    constructor(_orientationVarName, _dcltrVarName) {
-        super(...arguments);
+    constructor(_simVarNameID) {
+        super(_simVarNameID);
 		this.gpsWasInReversionaryMode = false;
 		this.enabled = true;
     }
