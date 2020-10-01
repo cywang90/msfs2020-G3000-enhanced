@@ -3396,6 +3396,8 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		this.detailButtonName = _detailButtonName;
 		this.detailSimVarName = AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID;
 		
+		this.tabbedContentContainer = new AS3000_TSC_TabbedContent(this);
+		
 		this.updateCallbacks = [];
 	}
 	
@@ -3403,6 +3405,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         this.initOrientationSetting();
 		this.initSyncSetting();
 		this.initDetailSetting();
+		this.tabbedContentContainer.init(root.getElementsByClassName("MapSettingsRight")[0]);
     }
 	
 	initOrientationSetting() {
@@ -3662,6 +3665,47 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
 	backHome() {
 		this.gps.goBack();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+}
+
+class AS3000_TSC_TabbedContent {
+	constructor(_parentElement, _tabOpenCallback = function(_id){}, _tabCloseCallback = function(_id){}) {
+		this.parentElement = _parentElement;
+		
+		this.tabOpenCallback = _tabOpenCallback;
+		this.tabCloseCallback = _tabCloseCallback;
+	}
+	
+	init(_container) {
+		this.container = _container;
+		this.tabButtons = this.container.getElementsByClassName("tabSelect")[0].getElementsByClassName("tabButton");
+		this.tabContent = this.container.getElementsByClassName("tabContentContainer")[0].getElementsByClassName("tabContent");
+		
+		for (let i = 0; i < this.tabButtons.length; i++) {
+			this.parentElement.gps.makeButton(this.tabButtons[i], this.onTabButtonClick.bind(this, i));
+		}
+		this.activeTab = 0;
+	}
+	
+	getActiveTab() {
+		return this.activeTab;
+	}
+	
+	activateTab(_id) {
+		if (this.activeTab != _id) {
+			Avionics.Utils.diffAndSetAttribute(this.tabContent[this.activeTab], "state", "Inactive");
+			Avionics.Utils.diffAndSetAttribute(this.tabButtons[this.activeTab], "state", "");
+			this.tabCloseCallback(this.activeTab);
+			
+			Avionics.Utils.diffAndSetAttribute(this.tabContent[_id], "state", "Active");
+			Avionics.Utils.diffAndSetAttribute(this.tabButtons[_id], "state", "Highlight");
+			this.activeTab = _id;
+			this.tabOpenCallback(this.activeTab);
+		}
+	}
+	
+	onTabButtonClick(_id) {
+		this.activateTab(_id);
 	}
 }
 //# sourceMappingURL=AS3000_TSC_Common.js.map
