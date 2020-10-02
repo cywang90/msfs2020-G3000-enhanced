@@ -34,9 +34,9 @@ class AS3000_MapElement extends MapInstrumentElement {
 		this.initDcltrSettings();
 		
 		// initialize airport range
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number", MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.indexOf(MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number", MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.indexOf(MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number", MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.indexOf(MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
     }
 	
 	initDcltrSettings() {
@@ -90,9 +90,14 @@ class AS3000_MapElement extends MapInstrumentElement {
 		if (sync != this.lastSync) {
 			if (sync == 1) {
 				// Sync All
-				let initID = AS3000_MapElement.SYNC_INITID_ARRAY[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number")];
-				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + initID, "number"));
-				SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + initID, "number"));
+				let initIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number");
+				if (initIndex >= 0) {
+					let initID = AS3000_MapElement.SYNC_INITID_ARRAY[initIndex];
+					if (initID == this.simVarNameID) {
+						this.syncMasterToAllSettings();
+						SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number", -1);
+					}
+				}
 			}
 			this.lastSync = sync;
 		}
@@ -208,3 +213,11 @@ AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
 AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT = "L:AS3000_Map_Airport_Small_Range";
 AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT = "L:AS3000_Map_Airport_Med_Range";
 AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT = "L:AS3000_Map_Airport_Large_Range";
+
+
+AS3000_MapElement.AIRPORT_SMALL_RANGE_DEFAULT = 25;
+AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX = 150;
+AS3000_MapElement.AIRPORT_MEDIUM_RANGE_DEFAULT = 50;
+AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX = 400;
+AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT = 100;
+AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX = 1000;

@@ -14,9 +14,9 @@ class MapInstrumentEnhanced extends MapInstrument {
 		
 		this.rotation = 0; // current rotation of map, in degrees
 		
-		this.smallAirportMaxRange = MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_DEFAULT;
-		this.medAirportMaxRange = MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_DEFAULT;
-		this.largeAirportMaxRange = MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_DEFAULT;
+		this.smallAirportMaxRange = this._ranges[this._ranges.length - 1];
+		this.medAirportMaxRange = this._ranges[this._ranges.length - 1];
+		this.largeAirportMaxRange = this._ranges[this._ranges.length - 1];
 	}
 	
 	init(arg) {
@@ -676,13 +676,6 @@ class MapInstrumentEnhanced extends MapInstrument {
 }
 
 MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
-
-MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_DEFAULT = 25;
-MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_MAX = 150;
-MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_DEFAULT = 50;
-MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_MAX = 400;
-MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_DEFAULT = 100;
-MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_MAX = 1000;
 
 customElements.define("map-instrument-enhanced", MapInstrumentEnhanced);
 checkAutoload();

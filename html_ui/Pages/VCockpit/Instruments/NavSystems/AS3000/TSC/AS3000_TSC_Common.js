@@ -56,6 +56,7 @@ class AS3000_TSC extends NavSystemTouch {
 		
 		SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", 1.0); // initialize display brightness variable: 1.0 = maximum brightness
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number", 0); // initialize map sync variable: 0 = off, 1 = all
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYNC_INITID, "number", -1) // -1 = nothing to sync
     }
     get templateID() { return "AS3000_TSC"; }
     connectedCallback() {
@@ -3533,10 +3534,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 	// setter helpers
 	
 	setOrientation(_val) {
-		SimVar.SetSimVarValue(this.orientationSimVarName, "number", _val);
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", _val);
-		}
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_ORIENTATION_ROOT, this.simVarNameID, _val);
 		this.updateOrientationValue();
     }
 	
@@ -3598,18 +3596,12 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	
 	syncDetailToSlider() {
 		let val = 3 - parseInt(this.slider.value);
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", val);
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", val);
-		}
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_DETAIL_ROOT, this.simVarNameID, val);
 	}
 	
 	changeDetail(_delta) {
 		let newValue = Math.min(Math.max(SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number") + _delta, 0), 3);
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", newValue);
-		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", newValue);
-		}
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_DETAIL_ROOT, this.simVarNameID, newValue);
 	}
 	
 	back() {
