@@ -3609,7 +3609,7 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	}
 	
 	backHome() {
-		this.gps.goBack();
+		this.gps.closePopUpElement();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
 	}
 }
@@ -3747,7 +3747,7 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
 	}
 	
 	backHome() {
-		this.gps.goBack();
+		this.gps.closePopUpElement();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
 	}
 }
