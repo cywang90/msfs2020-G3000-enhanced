@@ -168,7 +168,7 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
 				
 				if ((link.type < 100 && !map.htmlRoot.showRoads) ||
 					(link.type == 101 && !map.htmlRoot.showAirways) ||
-					(link.type > 102 && !map.htmlRoot.showAirways)) {
+					(link.type > 102 && !map.htmlRoot.showAirspaces)) {
 					continue;
 				}
 				
