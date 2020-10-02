@@ -5,7 +5,16 @@ class AS3000_MapElement extends MapInstrumentElement {
 		
 		this.lastOrientation = 0;
 		this.lastSync = 0;
-		this.lastDcltr = 0;
+		//this.lastDcltr = 0;
+		this.lastSymbolVis = new Map([
+			["show-roads", 1],
+			["show-cities", 1],
+			["show-airways", 1],
+			["show-vors", 1],
+			["show-ndbs", 1],
+			["show-intersections", 1],
+			["show-airports", 1]
+		]);
     }
 	
 	init(root) {
@@ -17,6 +26,11 @@ class AS3000_MapElement extends MapInstrumentElement {
         }
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", 0);	// set default map orientation (0 = hdg, 1 = trk, 2 = north)
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", 0);		// set default declutter (0 = none, 1 = DCLTR1, 2 = DCLTR2, 3 = least)
+		
+		for (let [attr, val] of this.lastSymbolVis) {
+			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number", 1);
+		}
+		
 		this.initDcltrSettings();
     }
 	
@@ -80,7 +94,7 @@ class AS3000_MapElement extends MapInstrumentElement {
 		this.syncSettings(sync);
 		
 		this.updateOrientation();
-		this.updateDcltr();
+		this.updateSymbolVisibility();
     }
 	
 	syncSettings(_sync) {
@@ -109,16 +123,18 @@ class AS3000_MapElement extends MapInstrumentElement {
 		}
 	}
 	
-	updateDcltr() {
+	updateSymbolVisibility() {
 		let dcltr = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number");
-		if (this.lastDcltr != dcltr) {
-			let settings = this.getDcltrSettings(dcltr);
-			
-			for (let [attr, value] of settings) {
-				this.instrument.setAttribute(attr, value);
+		let changedValues = new Map();
+		for (let [attr, lastVal] of this.lastSymbolVis) {
+			let currentVal = (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get(attr) + this.simVarNameID, "number") == 1) && this.getDcltrSettings(dcltr).get(attr);
+			if (currentVal != lastVal) {
+				this.instrument.setAttribute(attr, currentVal);
 			}
-			
-			this.lastDcltr = dcltr;
+			changedValues.set(attr, currentVal);
+		}
+		for (let [attr, currentVal] of changedValues) {
+			this.lastSymbolVis.set(attr, currentVal);
 		}
 	}
 	
@@ -130,6 +146,19 @@ class AS3000_MapElement extends MapInstrumentElement {
 	static getSyncInitIDIndex(_id) {
 		return AS3000_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
 	}
+	
+	static getSymbolVisRoot(_attr) {
+		switch (_attr) {
+			case "show-roads": return "L:AS3000_Map_Roads_Show";
+			case "show-cities": return "L:AS3000_Map_Cities_Show";
+			case "show-airways": return "L:AS3000_Map_Airways_Show";
+			case "show-vors": return "L:AS3000_Map_VORs_Show";
+			case "show-ndbs": return "L:AS3000_Map_NDBs_Show";
+			case "show-intersections": return "L:AS3000_Map_Intersections_Show";
+			case "show-airports": return "L:AS3000_Map_Airports_Show";
+		}
+		return "";
+	}
 }
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
@@ -137,3 +166,13 @@ AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";
 AS3000_MapElement.SYNC_INITID_ARRAY = ["_PFD", "_MFD"];						// horrible hack because I can't get SetSimVar to work for strings
 AS3000_MapElement.VARNAME_DETAIL_ROOT = "L:AS3000_Map_Dcltr";
 AS3000_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
+
+AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
+		["show-roads", "L:AS3000_Map_Roads_Show"],
+		["show-cities", "L:AS3000_Map_Cities_Show"],
+		["show-airways", "L:AS3000_Map_Airways_Show"],
+		["show-vors", "L:AS3000_Map_VORs_Show"],
+		["show-ndbs", "L:AS3000_Map_NDBs_Show"],
+		["show-intersections", "L:AS3000_Map_Intersections_Show"],
+		["show-airports", "L:AS3000_Map_Airports_Show"]
+]);
