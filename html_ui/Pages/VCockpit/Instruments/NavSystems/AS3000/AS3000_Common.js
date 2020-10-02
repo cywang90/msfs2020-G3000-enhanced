@@ -9,6 +9,7 @@ class AS3000_MapElement extends MapInstrumentElement {
 		this.lastSymbolVis = new Map([
 			["show-roads", 1],
 			["show-cities", 1],
+			["show-airspaces", 1],
 			["show-airways", 1],
 			["show-vors", 1],
 			["show-ndbs", 1],
@@ -147,17 +148,11 @@ class AS3000_MapElement extends MapInstrumentElement {
 		return AS3000_MapElement.SYNC_INITID_ARRAY.indexOf(_id);
 	}
 	
-	static getSymbolVisRoot(_attr) {
-		switch (_attr) {
-			case "show-roads": return "L:AS3000_Map_Roads_Show";
-			case "show-cities": return "L:AS3000_Map_Cities_Show";
-			case "show-airways": return "L:AS3000_Map_Airways_Show";
-			case "show-vors": return "L:AS3000_Map_VORs_Show";
-			case "show-ndbs": return "L:AS3000_Map_NDBs_Show";
-			case "show-intersections": return "L:AS3000_Map_Intersections_Show";
-			case "show-airports": return "L:AS3000_Map_Airports_Show";
+	static setSyncedSettingVar(_root, _id, _val) {
+		SimVar.SetSimVarValue(_root + _id, "number", _val);
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_SYNC, "number") == 1) {
+			SimVar.SetSimVarValue(_root + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number", _val);
 		}
-		return "";
 	}
 }
 AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
@@ -170,6 +165,7 @@ AS3000_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
 AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
 		["show-roads", "L:AS3000_Map_Roads_Show"],
 		["show-cities", "L:AS3000_Map_Cities_Show"],
+		["show-airspaces", "L:AS3000_Map_Cities_Show"],
 		["show-airways", "L:AS3000_Map_Airways_Show"],
 		["show-vors", "L:AS3000_Map_VORs_Show"],
 		["show-ndbs", "L:AS3000_Map_NDBs_Show"],

@@ -153,6 +153,10 @@ class AS3000_TSC extends NavSystemTouch {
 		
 		this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new AS3000_TSC_MapDetailSelect());
         this.mapDetailSelect.setGPS(this);
+		
+		Include.addScript("/JS/debug.js", function () {
+			g_modDebugMgr.AddConsole(null);
+		});
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -3397,6 +3401,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		this.detailSimVarName = AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID;
 		
 		this.tabbedContentContainer = new AS3000_TSC_TabbedContent(this);
+		this.aviationTab = new AS3000_TSC_MapSettingsAviationTab(this);
 		
 		this.updateCallbacks = [];
 	}
@@ -3405,7 +3410,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         this.initOrientationSetting();
 		this.initSyncSetting();
 		this.initDetailSetting();
-		this.tabbedContentContainer.init(root.getElementsByClassName("MapSettingsRight")[0]);
+		this.initTabs(root);
     }
 	
 	initOrientationSetting() {
@@ -3433,6 +3438,12 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 			this.gps.makeButton(this.detailButton, this.openDetailSelection.bind(this));
 			this.updateCallbacks.push(this.updateDetailValue.bind(this));
 		}
+	}
+	
+	initTabs(_root) {
+		this.tabbedContentContainer.init(_root.getElementsByClassName("MapSettingsRight")[0]);
+		this.aviationTab.init(_root.getElementsByClassName("MapAviationTab")[0]);
+		this.updateCallbacks.push(this.aviationTab.update.bind(this.aviationTab));
 	}
 	
     onEnter() {
@@ -3608,6 +3619,80 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
 	backHome() {
 		this.gps.goBack();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+}
+
+class AS3000_TSC_MapSettingsTab {
+	constructor(_parentElement) {
+		this.parentElement = _parentElement;
+	}
+	
+	init(_container) {
+		this.container = _container;
+		
+		this.buttonRowList = this.container.getElementsByClassName("MapSettingsTabRow");
+		this.buttonLeftList = [];
+		this.buttonRightList = [];
+		for (let row of this.buttonRowList) {
+			let rowButtons = row.getElementsByClassName("gradientButton");
+			this.buttonLeftList.push(rowButtons[0]);
+			if (rowButtons.length > 1) {
+				this.buttonRightList.push(rowButtons[1]);
+			} else {
+				this.buttonRightList.push(null);
+			}
+		}
+		
+		this.scrollElement = new NavSystemTouch_ScrollElement();
+        this.scrollElement.elementContainer = this.container;
+		this.scrollElement.elementSize = this.buttonRowList.length > 0 ? this.buttonRowList[0].getBoundingClientRect().height : 0;
+		
+		for (let i = 0; i < this.buttonRowList.length; i++) {
+			this.parentElement.gps.makeButton(this.buttonLeftList[i], this.onButtonClick.bind(this, i, true));
+			if (this.buttonRightList[i]) {
+				this.parentElement.gps.makeButton(this.buttonRightList[i], this.onButtonClick.bind(this, i, false));
+			}
+		}
+	}
+	
+	onButtonClick(_rowIndex, _isLeft) {
+	}
+}
+
+class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
+	constructor(_parentElement) {
+		super(_parentElement);
+		this.showAirspaceVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airspaces");
+		this.showAirportVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airports");
+	}
+	
+	update() {
+		// airspaces
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(this.showAirspaceVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		
+		// airports
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(this.showAirportVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+	}
+	
+	onButtonClick(_rowIndex, _isLeft) {
+		switch (_rowIndex) {
+			case 0: _isLeft ? this.toggleShowAirspace() : this.openAirspaceRangeWindow(); break;
+			case 1: _isLeft ? this.toggleShowAirport() : this.openAirportRangeWindow(); break;
+		}
+	}
+	
+	toggleShowAirspace() {
+		AS3000_MapElement.setSyncedSettingVar(this.showAirspaceVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(this.showAirspaceVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
+	}
+	
+	openAirspaceRangeWindow() {
+	}
+	
+	toggleShowAirport() {
+		AS3000_MapElement.setSyncedSettingVar(this.showAirportVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(this.showAirportVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
+	}
+	
+	openAirportRangeWindow() {
 	}
 }
 
