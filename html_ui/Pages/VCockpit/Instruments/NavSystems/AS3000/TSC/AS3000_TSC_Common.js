@@ -3689,6 +3689,11 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 }
 
 class AS3000_TSC_SelectionListWindow extends NavSystemElement {
+	constructor(_closeOnSelect = true) {
+		super();
+		this.closeOnSelect = _closeOnSelect;
+	}
+	
 	init(root) {
 		this.window = root;
 		
@@ -3732,7 +3737,9 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
 	
 	onButtonClick(_id) {
         this.callback(_id);
-		this.gps.goBack();
+		if (this.closeOnSelect) {
+			this.gps.goBack();
+		}
     }
 	
 	back() {
