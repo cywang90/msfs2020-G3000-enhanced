@@ -488,71 +488,6 @@
 											</div>
 										</td>
 									</tr>
-									<tr class="MapSettingsTabRow">
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-												<div class="mainText">Dummy1</div>
-												<div class="statusBar"></div>
-											</div>
-										</td>
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonRight">
-												<div class="statusText"></div>
-											</div>
-										</td>
-									</tr>
-									<tr class="MapSettingsTabRow">
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-												<div class="mainText">Dummy2</div>
-												<div class="statusBar"></div>
-											</div>
-										</td>
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonRight">
-												<div class="statusText"></div>
-											</div>
-										</td>
-									</tr>
-									<tr class="MapSettingsTabRow">
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-												<div class="mainText">Dummy3</div>
-												<div class="statusBar"></div>
-											</div>
-										</td>
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonRight">
-												<div class="statusText"></div>
-											</div>
-										</td>
-									</tr>
-									<tr class="MapSettingsTabRow">
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-												<div class="mainText">Dummy4</div>
-												<div class="statusBar"></div>
-											</div>
-										</td>
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonRight">
-												<div class="statusText"></div>
-											</div>
-										</td>
-									</tr>
-									<tr class="MapSettingsTabRow">
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonLeft" state="Active">
-												<div class="mainText">Dummy5</div>
-												<div class="statusBar"></div>
-											</div>
-										</td>
-										<td>
-											<div class="gradientButton MapSettingsTabRowButtonRight">
-												<div class="statusText"></div>
-											</div>
-										</td>
-									</tr>
 								</table>
 							</div>
 							<div class="tabContent MapLandTab" state="Inactive">
@@ -2471,6 +2406,11 @@
                     </div>
                 </div>
             </div>
+			<div class="PopUpWindow Transparent" id="DynamicSelectionListWindow" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+                <div class="content">
+                </div>
+            </div>
 			<div class="PopUpWindow Transparent SelectionListWindow" id="MapOrientationSelect" state="Inactive">
                 <div class="WindowTitle">Map Orientation</div>
                 <div class="content">
@@ -2515,6 +2455,23 @@
 					<div class="gradientButton" id="MapDetailDecreaseButton">
 						<img class="img_large" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_ARROW_DOWN_MINUS.png" />
 					</div>
+                </div>
+            </div>
+			<div class="PopUpWindow Transparent SelectionListWindow StatusButtonSelectionListWindow" id="MapAirportRangeTypeSelect" state="Inactive">
+                <div class="WindowTitle">Airport Settings</div>
+                <div class="content">
+                    <div class="gradientButton" id="MapAirportRangeLargeAirportButton">
+                        <div class="mainText">Large Airport</div>
+						<div class="statusText"></div>
+                    </div>
+                    <div class="gradientButton" id="MapAirportRangeMediumAirportButton">
+                        <div class="mainText">Medium Airport</div>
+						<div class="statusText"></div>
+                    </div>
+                    <div class="gradientButton" id="MapAirportRangeSmallAirportButton">
+                        <div class="mainText">Small Airport</div>
+						<div class="statusText"></div>
+                    </div>
                 </div>
             </div>
             <div class="PopUpWindow Transparent" id="LoadFrequencyPopup" state="Inactive">
@@ -2585,7 +2542,7 @@
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 
-<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html"></script>
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrumentEnhanced.html"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
@@ -2598,5 +2555,5 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo20=bar"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>

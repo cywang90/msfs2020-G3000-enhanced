@@ -146,14 +146,20 @@ class AS3000_TSC extends NavSystemTouch {
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", new AS3000_TSC_TerrainAlert()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Confirmation Window", "ConfirmationWindow", this.confirmationWindow));
 		
-		this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SelectionListWindow());
+		this.dynamicSelectionListWindow = new NavSystemElementContainer("Dynamic Selection List Window", "DynamicSelectionListWindow", new AS3000_TSC_DynamicSelectionListWindow());
+        this.dynamicSelectionListWindow.setGPS(this);
+		
+		this.mapOrientationSelect = new NavSystemElementContainer("Map Orientation Settings", "MapOrientationSelect", new AS3000_TSC_SimpleSelectionListWindow());
         this.mapOrientationSelect.setGPS(this);
 		
-		this.mapSyncSelect = new NavSystemElementContainer("Map Sync Settings", "MapSyncSelect", new AS3000_TSC_SelectionListWindow());
+		this.mapSyncSelect = new NavSystemElementContainer("Map Sync Settings", "MapSyncSelect", new AS3000_TSC_SimpleSelectionListWindow());
         this.mapSyncSelect.setGPS(this);
 		
 		this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new AS3000_TSC_MapDetailSelect());
         this.mapDetailSelect.setGPS(this);
+		
+		this.mapAirportRangeTypeSelect = new NavSystemElementContainer("Airport Settings", "MapAirportRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
+        this.mapAirportRangeTypeSelect.setGPS(this);
 		
 		Include.addScript("/JS/debug.js", function () {
 			g_modDebugMgr.AddConsole(null);
@@ -3656,6 +3662,27 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 		super(_parentElement);
 		this.showAirspaceVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airspaces");
 		this.showAirportVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airports");
+		
+		this.airportTypeSimVarNames = [
+			AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT
+		];
+		this.airportTypeRangeSelectTitles = [
+			"Map Large Airport Range",
+			"Map Medium Airport Range",
+			"Map Small Airport Range"
+		];
+		this.airportTypeRangeValues = [[], [], []];
+		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX; i++) {
+			this.airportTypeRangeValues[0].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
+		}
+		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX; i++) {
+			this.airportTypeRangeValues[1].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
+		}
+		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX; i++) {
+			this.airportTypeRangeValues[2].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
+		}
 	}
 	
 	update() {
@@ -3669,7 +3696,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 	onButtonClick(_rowIndex, _isLeft) {
 		switch (_rowIndex) {
 			case 0: _isLeft ? this.toggleShowAirspace() : this.openAirspaceRangeWindow(); break;
-			case 1: _isLeft ? this.toggleShowAirport() : this.openAirportRangeWindow(); break;
+			case 1: _isLeft ? this.toggleShowAirport() : this.openAirportRangeTypeWindow(); break;
 		}
 	}
 	
@@ -3678,13 +3705,29 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 	}
 	
 	openAirspaceRangeWindow() {
+		
 	}
 	
 	toggleShowAirport() {
 		AS3000_MapElement.setSyncedSettingVar(this.showAirportVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(this.showAirportVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
 	}
 	
-	openAirportRangeWindow() {
+	openAirportRangeTypeWindow() {
+		this.parentElement.gps.mapAirportRangeTypeSelect.element.setContext(this.openAirportRangeWindow.bind(this), this.getAirportTypeRangeDisplay.bind(this), this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapAirportRangeTypeSelect);
+	}
+	
+	openAirportRangeWindow(_index) {
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.airportTypeRangeSelectTitles[_index], this.setAirportTypeRange.bind(this), this.airportTypeSimVarNames[_index] + this.parentElement.simVarNameID, this.airportTypeRangeValues[_index], this.parentElement.homePageParent, this.parentElement.homePageName, this.airportTypeSimVarNames[_index]);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	getAirportTypeRangeDisplay(_index) {
+		return MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.airportTypeSimVarNames[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+	}
+	
+	setAirportTypeRange(_val, _varNameRoot) {
+		AS3000_MapElement.setSyncedSettingVar(_varNameRoot, this.parentElement.simVarNameID, _val);
 	}
 }
 
@@ -3709,17 +3752,16 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
 		this.scrollElement.elementSize = this.buttonList.length > 0 ? this.buttonList[0].getBoundingClientRect().height : 0;
     }
 	
+	onEvent(_event) {
+    }
+	
 	onEnter() {
 		this.window.setAttribute("state", "Active");
 		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+		this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
 	}
 	
 	onUpdate(_deltaTime) {
-		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
-		for (let i = 0; i < this.buttonList.length; i++) {
-			Avionics.Utils.diffAndSetAttribute(this.buttonList[i], "state", (currentVarValue == i) ? "Highlight" : "");
-		}
 	}
 	
 	onExit() {
@@ -3728,15 +3770,104 @@ class AS3000_TSC_SelectionListWindow extends NavSystemElement {
 		this.window.setAttribute("state", "Inactive");
 	}
 	
+	onButtonClick(_id) {
+        this.callback(_id);
+		if (this.closeOnSelect) {
+			this.gps.goBack();
+		}
+    }
+	
+	back() {
+		this.gps.goBack();
+	}
+	
+	backHome() {
+		this.gps.closePopUpElement();
+		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+}
+
+class AS3000_TSC_SimpleSelectionListWindow extends AS3000_TSC_SelectionListWindow {
+	onUpdate(_deltaTime) {
+		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
+		for (let i = 0; i < this.buttonList.length; i++) {
+			Avionics.Utils.diffAndSetAttribute(this.buttonList[i], "state", (currentVarValue == i) ? "Highlight" : "");
+		}
+	}
+	
 	setContext(_callback, _simVarName, _homePageParent, _homePageName) {
 		this.callback = _callback;
 		this.simVarName = _simVarName;
 		this.homePageParent = _homePageParent;
 		this.homePageName = _homePageName;
 	}
+}
+
+class AS3000_TSC_StatusButtonSelectionListWindow extends AS3000_TSC_SelectionListWindow {
+	init(root) {
+		super.init(root);
+		this.buttonStatusList = []; 
+		for (let button of this.buttonList) {
+			this.buttonStatusList.push(button.getElementsByClassName("statusText")[0]);
+		}
+	}
 	
-	onButtonClick(_id) {
-        this.callback(_id);
+	onUpdate(_deltaTime) {
+		for (let i = 0; i < this.buttonStatusList.length; i++) {
+			Avionics.Utils.diffAndSet(this.buttonStatusList[i], this.statusDisplayGetter(i));
+		}
+	}
+	
+	setContext(_callback, _statusDisplayGetter, _homePageParent, _homePageName) {
+		this.callback = _callback;
+		this.statusDisplayGetter = _statusDisplayGetter;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+	}
+}
+
+class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList {
+	constructor(_closeOnSelect = true) {
+		super();
+		this.closeOnSelect = _closeOnSelect;
+	}
+	
+	onEnter() {
+		super.onEnter();
+		this.setElements(this.tempTitle, this.tempElements, this.tempCallback);
+		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+	}
+	
+	onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+		
+		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
+		for (let i = 0; i < this.buttons.length; i++) {
+			if (this.buttons[i].state != "Inactive") {
+				Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", (currentVarValue == i) ? "Highlight" : "Active");
+			}
+		}
+    }
+	
+	onExit() {
+		this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+		super.onExit();
+	}
+	
+	setContext(_title, _callback, _simVarName, _elements, _homePageParent, _homePageName, _callbackData = null) {
+		this.tempTitle = _title;
+		this.tempCallback = _callback;
+		this.tempElements = _elements;
+		this.homePageParent = _homePageParent;
+		this.homePageName = _homePageName;
+		this.simVarName = _simVarName;
+		this.callbackData = _callbackData;
+	}
+	
+	onElemClick(_id) {
+        this.callback(_id, this.callbackData);
 		if (this.closeOnSelect) {
 			this.gps.goBack();
 		}

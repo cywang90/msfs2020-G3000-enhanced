@@ -2062,7 +2062,7 @@ as3000-tsc-horizontal-element {
       border: 0.4vh solid white; 
 	  overflow-y: scroll; }
 	  as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar {
-        width: 0.5vw; }
+        width: 1vw; }
       as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar-track {
         background: none; }
       as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content::-webkit-scrollbar-thumb {
@@ -2071,6 +2071,44 @@ as3000-tsc-horizontal-element {
         width: 100%; 
 		margin-bottom: 5%; }
         as3000-tsc-horizontal-element #Electricity .SelectionListWindow .content .gradientButton .mainText {
+          font-size: 5vh;
+          position: absolute;
+          top: 30%;
+          text-align: center;
+          width: 100%; }
+	
+	as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .mainText {
+		top: 20%;
+		font-size: 4vh; }
+	as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .statusText {
+        width: 100%;
+		font-size: 5vh;
+        position: absolute;
+        bottom: 5%;
+        text-align: center; }
+		
+	as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .WindowTitle {
+      background-color: black; }
+    as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content {
+      position: absolute;
+      width: 50%;
+      left: 25%;
+      height: 80%;
+      bottom: 5%;
+      background-color: black;
+      padding: 2%;
+      border: 0.4vh solid white; 
+	  overflow-y: scroll; }
+	  as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar {
+        width: 1vw; }
+      as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar-track {
+        background: none; }
+      as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
+        background: white; }
+      as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton {
+        width: 100%; 
+		margin-bottom: 5%; }
+        as3000-tsc-horizontal-element #Electricity #DynamicSelectionListWindow .content .gradientButton .value {
           font-size: 5vh;
           position: absolute;
           top: 30%;
@@ -2537,6 +2575,8 @@ as3000-tsc-horizontal-element {
 	as3000-tsc-horizontal-element .gradientButton[state=Highlight] {
       background: linear-gradient(#7dddff, #008cb4 15%); }
 	  as3000-tsc-horizontal-element .gradientButton[state=Highlight] .mainText {
+        color: black; }
+	  as3000-tsc-horizontal-element .gradientButton[state=Highlight] .value {
         color: black; }
     as3000-tsc-horizontal-element .gradientButton:Hover:Active {
       background: #37c6ed; }
