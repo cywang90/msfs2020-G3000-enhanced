@@ -13,6 +13,10 @@ class MapInstrumentEnhanced extends MapInstrument {
 		this.orientation = "hdg";
 		
 		this.rotation = 0; // current rotation of map, in degrees
+		
+		this.smallAirportMaxRange = MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_DEFAULT;
+		this.medAirportMaxRange = MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_DEFAULT;
+		this.largeAirportMaxRange = MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_DEFAULT;
 	}
 	
 	init(arg) {
@@ -280,7 +284,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
-                    this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.airportLoader.searchRange = Math.min(this.navMap.NMWidth, this.largeAirportMaxRange) * 1.5;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -381,15 +385,15 @@ class MapInstrumentEnhanced extends MapInstrument {
                         let airport = this.airportLoader.waypoints[i];
                         if (airport && airport.infos instanceof AirportInfo) {
                             if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                if (this.getDeclutteredRange() < this.smallAirportMaxRange) {
+                                if (this.getDisplayRange() <= this.smallAirportMaxRange) {
                                     this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                 }
-                                else if (this.getDeclutteredRange() < this.medAirportMaxRange) {
+                                else if (this.getDisplayRange() <= this.medAirportMaxRange) {
                                     if (airport.infos.getClassSize() !== AirportSize.Small) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                     }
                                 }
-                                else if (this.getDeclutteredRange() < this.largeAirportMaxRange) {
+                                else if (this.getDisplayRange() <= this.largeAirportMaxRange) {
                                     if (airport.infos.getClassSize() === AirportSize.Large) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                     }
@@ -653,9 +657,32 @@ class MapInstrumentEnhanced extends MapInstrument {
 			this.setNavMapCenter(target);
 		}
     }
+	
+	get zoomRanges() {
+        return this._ranges;
+    }
+	
+	set smallAirportMaxRangeIndex(_index) {
+		this.smallAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set medAirportMaxRangeIndex(_index) {
+		this.medAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set largeAirportMaxRangeIndex(_index) {
+		this.largeAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
 }
 
-MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
+MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
+
+MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_DEFAULT = 25;
+MapInstrumentEnhanced.AIRPORT_SMALL_RANGE_MAX = 150;
+MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_DEFAULT = 50;
+MapInstrumentEnhanced.AIRPORT_MEDIUM_RANGE_MAX = 400;
+MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_DEFAULT = 100;
+MapInstrumentEnhanced.AIRPORT_LARGE_RANGE_MAX = 1000;
 
 customElements.define("map-instrument-enhanced", MapInstrumentEnhanced);
 checkAutoload();
