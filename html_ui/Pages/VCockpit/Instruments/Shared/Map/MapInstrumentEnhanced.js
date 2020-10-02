@@ -2,6 +2,8 @@ class MapInstrumentEnhanced extends MapInstrument {
 	constructor() {
 		super();
 		
+		this._ranges = MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT;
+		
 		/*
 		 * Defines orientation of the map:
 		 * hdg: current aircraft heading up
@@ -652,5 +654,8 @@ class MapInstrumentEnhanced extends MapInstrument {
 		}
     }
 }
+
+MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
+
 customElements.define("map-instrument-enhanced", MapInstrumentEnhanced);
 checkAutoload();
