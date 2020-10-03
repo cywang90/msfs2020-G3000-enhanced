@@ -1,7 +1,9 @@
 class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
     constructor() {
         super();
-		this.lastShowRoads = true;
+		this.lastShowRoadsHighway = true;
+		this.lastShowRoadsTrunk = true;
+		this.lastShowRoadsPrimary = true;
 		this.lastShowAirspaces = true;
 		this.lastShowAirways = true;
     }
@@ -19,11 +21,16 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
                 this._visibleCanvas.canvas.style.display = "none";
         }
 		
-		let showRoads = map.htmlRoot.showRoads && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.roadMaxRange);
+		let mapRange = map.htmlRoot.getDisplayRange();
+		let showRoadsHighway = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadHighwayMaxRange);
+		let showRoadsTrunk = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadTrunkMaxRange);
+		let showRoadsPrimary = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadPrimaryMaxRange);
 		let showAirspaces = map.htmlRoot.showAirspaces && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.airspaceMaxRange);
 		let showAirways = map.htmlRoot.showAirways;
 		
-		let visibilityChanged = (this.lastShowRoads != showRoads) ||
+		let visibilityChanged = (this.lastShowRoadsHighway != showRoadsHighway) ||
+								(this.lastShowRoadsTrunk != showRoadsTrunk) ||
+								(this.lastShowRoadsPrimary != showRoadsPrimary) ||
 								(this.lastShowAirspaces != showAirspaces) ||
 								(this.lastShowAirways != showAirways);
 								
@@ -131,7 +138,7 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
                 this._forcedDirection = map.rotation;
                 this.onLatLongChanged(map, this._lastCoords);
             }
-            if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 0.1) {
+            if (visibilityChanged || this._hasNewRoads || diffLastLat > thresholdLat || diffLastLong > thresholdLong || Math.abs(this._forcedDirection - map.rotation) > 2) {
                 // back buffer needs to be updated
 				this._iterator = 0;
                 this._activeInvisibleCanvasIndex = (this._activeInvisibleCanvasIndex + 1) % 2;
@@ -170,7 +177,9 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
             let link = links.get(this._iterator++);
             if (link) {
 				
-				if ((link.type < 100 && !showRoads) ||
+				if ((link.type == 0 && !showRoadsHighway) ||
+					(link.type == 2 && !showRoadsTrunk) ||
+					(link.type == 4 && !showRoadsPrimary) ||
 					(link.type == 101 && !showAirways) ||
 					(link.type > 102 && !showAirspaces)) {
 					continue;

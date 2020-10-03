@@ -16,6 +16,20 @@ class AS3000_MapElement extends MapInstrumentElement {
 			["show-intersections", 1],
 			["show-airports", 1]
 		]);
+		
+		this.settingsToSync = [
+			AS3000_MapElement.VARNAME_ORIENTATION_ROOT,
+			AS3000_MapElement.VARNAME_DETAIL_ROOT,
+			AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_VOR_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_NDB_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT
+		]
     }
 	
 	init(root) {
@@ -40,7 +54,9 @@ class AS3000_MapElement extends MapInstrumentElement {
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.AIRPORT_LARGE_RANGE_DEFAULT));
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.VOR_RANGE_DEFAULT));
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NDB_RANGE_DEFAULT));
-		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
     }
 	
 	initDcltrSettings() {
@@ -105,28 +121,17 @@ class AS3000_MapElement extends MapInstrumentElement {
 			}
 			this.lastSync = sync;
 		}
-		this.syncSettings(sync);
+		
+		if (sync == 1) {
+			for (let varNameRoot of this.settingsToSync) {
+				this.syncSettingToMaster(varNameRoot);
+			}
+		}
 		
 		this.updateOrientation();
 		this.updateSymbolVisibility();
 		this.updateSymbolRange();
     }
-	
-	syncSettings(_sync) {
-		if (_sync == 1) {
-			// Sync All
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_ORIENTATION_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_DETAIL_ROOT);
-			
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT);
-			this.syncSettingToMaster(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT);
-		}
-	}
 	
 	updateOrientation() {
 		let orientation = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number");
@@ -168,7 +173,9 @@ class AS3000_MapElement extends MapInstrumentElement {
 		this.instrument.largeAirportMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT + this.simVarNameID, "number");
 		this.instrument.vorMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.simVarNameID, "number");
 		this.instrument.ndbMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.simVarNameID, "number");
-		this.instrument.roadMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.simVarNameID, "number");
+		this.instrument.roadHighwayMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number");
+		this.instrument.roadTrunkMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number");
+		this.instrument.roadPrimaryMaxRangeIndex = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number");
 	}
 	
 	// returns key-value pairs for declutter settings for a given declutter level
@@ -185,16 +192,9 @@ class AS3000_MapElement extends MapInstrumentElement {
 	}
 	
 	syncMasterToAllSettings() {
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_ORIENTATION_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_DETAIL_ROOT);
-		
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT);
-		this.syncMasterToSetting(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT);
+		for (let varNameRoot of this.settingsToSync) {
+			this.syncMasterToSetting(varNameRoot);
+		}
 	}
 	
 	static getSyncInitIDIndex(_id) {
@@ -239,7 +239,10 @@ AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT = "L:AS3000_Map_Airport_Med_
 AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT = "L:AS3000_Map_Airport_Large_Range";
 AS3000_MapElement.VARNAME_VOR_RANGE_ROOT = "L:AS3000_Map_VOR_Range";
 AS3000_MapElement.VARNAME_NDB_RANGE_ROOT = "L:AS3000_Map_NDB_Range";
-AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT = "L:AS3000_Map_Road_Range";
+
+AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT = "L:AS3000_Map_Road_Highway_Range";
+AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT = "L:AS3000_Map_Road_Trunk_Range";
+AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT = "L:AS3000_Map_Road_Primary_Range";
 
 AS3000_MapElement.AIRSPACE_RANGE_DEFAULT = 50;
 AS3000_MapElement.AIRSPACE_RANGE_MAX = 150;
@@ -256,5 +259,9 @@ AS3000_MapElement.VOR_RANGE_MAX = 250;
 AS3000_MapElement.NDB_RANGE_DEFAULT = 25;
 AS3000_MapElement.NDB_RANGE_MAX = 50;
 
-AS3000_MapElement.ROAD_RANGE_DEFAULT = 25;
-AS3000_MapElement.ROAD_RANGE_MAX = 100;
+AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT = 50;
+AS3000_MapElement.ROAD_HIGHWAY_RANGE_MAX = 400;
+AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT = 15;
+AS3000_MapElement.ROAD_TRUNK_RANGE_MAX = 150;
+AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 5;
+AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
