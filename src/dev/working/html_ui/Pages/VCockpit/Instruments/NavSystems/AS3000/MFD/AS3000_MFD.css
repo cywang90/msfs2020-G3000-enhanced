@@ -226,7 +226,7 @@ as3000-mfd-element {
               position: absolute;
               top: 0.25%;
               left: 0.25%;
-              width: 15%;
+              width: 10%;
               height: calc( 3 * 1vh * var(--bodyHeightScale));
 			  font-size: calc( 2.3 * 1vh * var(--bodyHeightScale)); }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData {
