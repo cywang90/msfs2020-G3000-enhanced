@@ -32,10 +32,12 @@ Please refer to the changelog for a more detailed description of updates.
 
 ### Known Issues
 - \[PFD\] Co-pilot PFD softkeys are nonfunctional. (This is actually a vanilla game bug, but I'm including it because it's a pretty major one.)
+- \[NavMap\] Roads will be slow to draw on the navigational map at large map ranges.
 - \[NavMap\] The road overlay for the navigational map will sometimes fail to draw roads close to the aircraft, instead prioritizing roads farther away. This usually only happens when the map range is set to large values (>100 NM).
 
 ### TODO
-- \[Compatibility\] Make this mod compatible with the Cessna Citation Longitude.
-- \[NavMap\] Implement Auto-North-Up and Auto Zoom(?).
+*This is not a comprehensive list of planned features. It is simply an outline of the most immediate things I was planning to work on when this document was last updated.*
+- \[NavMap\] Implement Auto-North-Up and Auto Zoom.
 - \[NavMap\] Implement compass/heading rose and range overlays for the main navigational map.
 - \[NavMap\] Allow toggling of terrain elevation data on the navigational map.
+- \[Compatibility\] Make this mod compatible with the Cessna Citation Longitude.
