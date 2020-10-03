@@ -3959,8 +3959,6 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	}
 	
 	onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-		
 		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
 		for (let i = 0; i < this.buttons.length; i++) {
 			if (this.buttons[i].state != "Inactive") {
