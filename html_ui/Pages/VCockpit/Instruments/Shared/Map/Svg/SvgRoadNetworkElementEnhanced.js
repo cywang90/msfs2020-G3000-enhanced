@@ -175,21 +175,21 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
                 if (lastLinkType !== link.type) {
                     if (link.type === 0) {
                         invisibleContext.stroke();
-                        invisibleContext.strokeStyle = "gray";
+                        invisibleContext.strokeStyle = map.config.roadMotorWayColor;
                         invisibleContext.beginPath();
                         invisibleContext.lineWidth = map.config.roadMotorWayWidth;
                         lastLinkType = link.type;
                     }
                     else if (link.type === 2) {
                         invisibleContext.stroke();
-                        invisibleContext.strokeStyle = "gray";
+                        invisibleContext.strokeStyle = map.config.roadTrunkColor;
                         invisibleContext.beginPath();
                         invisibleContext.lineWidth = map.config.roadTrunkWidth;
                         lastLinkType = link.type;
                     }
                     else if (link.type === 4) {
                         invisibleContext.stroke();
-                        invisibleContext.strokeStyle = "gray";
+                        invisibleContext.strokeStyle = map.config.roadPrimaryColor;
                         invisibleContext.beginPath();
                         invisibleContext.lineWidth = map.config.roadPrimaryWidth;
                         lastLinkType = link.type;
