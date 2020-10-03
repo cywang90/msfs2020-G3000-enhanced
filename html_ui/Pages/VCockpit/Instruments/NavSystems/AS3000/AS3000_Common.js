@@ -115,8 +115,8 @@ class AS3000_MapElement extends MapInstrumentElement {
 	syncSettings(_sync) {
 		if (_sync == 1) {
 			// Sync All
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number"));
-			SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.simVarNameID, "number", SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + AS3000_MapElement.VARNAME_SYNC_ALL_ID, "number"));
+			this.syncSettingToMaster(AS3000_MapElement.VARNAME_ORIENTATION_ROOT);
+			this.syncSettingToMaster(AS3000_MapElement.VARNAME_DETAIL_ROOT);
 			
 			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT);
 			this.syncSettingToMaster(AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT);
