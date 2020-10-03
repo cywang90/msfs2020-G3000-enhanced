@@ -14,11 +14,13 @@ class MapInstrumentEnhanced extends MapInstrument {
 		
 		this.rotation = 0; // current rotation of map, in degrees
 		
+		this.airspaceMaxRange = this._ranges[10]
 		this.smallAirportMaxRange = this._ranges[10];
 		this.medAirportMaxRange = this._ranges[10];
 		this.largeAirportMaxRange = this._ranges[10];
 		this.vorMaxRange = this._ranges[10];
 		this.ndbMaxRange = this._ranges[10];
+		this.roadMaxRange = this._ranges[10];
 	}
 	
 	init(arg) {
@@ -153,7 +155,7 @@ class MapInstrumentEnhanced extends MapInstrument {
             this.drawCounter++;
             this.drawCounter %= 100;
             this.npcAirplaneManager.update();
-            if (this.showRoads) {
+            if (this.showRoads && (this.getDisplayRange() <= this.roadMaxRange)) {
                 let t0 = performance.now();
                 while (this.roadsBuffer.length > 0 && (performance.now() - t0 < 1)) {
                     let road = this.roadsBuffer.pop();
@@ -647,6 +649,10 @@ class MapInstrumentEnhanced extends MapInstrument {
         return this._ranges;
     }
 	
+	set airspaceMaxRangeIndex(_index) {
+		this.airspaceMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
 	set smallAirportMaxRangeIndex(_index) {
 		this.smallAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
@@ -665,6 +671,10 @@ class MapInstrumentEnhanced extends MapInstrument {
 	
 	set ndbMaxRangeIndex(_index) {
 		this.ndbMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set roadMaxRangeIndex(_index) {
+		this.roadMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
 }
 

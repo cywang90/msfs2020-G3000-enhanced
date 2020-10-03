@@ -3409,6 +3409,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		
 		this.tabbedContentContainer = new AS3000_TSC_TabbedContent(this);
 		this.aviationTab = new AS3000_TSC_MapSettingsAviationTab(this);
+		this.landTab = new AS3000_TSC_MapSettingsLandTab(this);
 		
 		this.updateCallbacks = [];
 	}
@@ -3451,6 +3452,8 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		this.tabbedContentContainer.init(_root.getElementsByClassName("MapSettingsRight")[0]);
 		this.aviationTab.init(_root.getElementsByClassName("MapAviationTab")[0]);
 		this.updateCallbacks.push(this.aviationTab.update.bind(this.aviationTab));
+		this.landTab.init(_root.getElementsByClassName("MapLandTab")[0]);
+		this.updateCallbacks.push(this.landTab.update.bind(this.landTab));
 	}
 	
     onEnter() {
@@ -3696,6 +3699,7 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[3], "state", (SimVar.GetSimVarValue(this.showNDBVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
 		
 		// ranges
+		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
 		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[2], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
 		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[3], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
 	}
@@ -3716,7 +3720,14 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 	// airspace helpers
 	
 	openAirspaceRangeWindow() {
+		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRSPACE_RANGE_MAX);
 		
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Airspace Range", this.setAirspaceRange.bind(this), AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	setAirspaceRange(_val) {
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_AIRSPACE_RANGE_ROOT, this.parentElement.simVarNameID, _val);
 	}
 	
 	// airport helpers
@@ -3770,6 +3781,44 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 	
 	setNDBRange(_val) {
 		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, this.parentElement.simVarNameID, _val);
+	}
+}
+
+class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
+	constructor(_parentElement) {
+		super(_parentElement);
+		this.showRoadVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-roads");
+	}
+	
+	update() {
+		// toggles
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(this.showRoadVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		
+		// ranges
+		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
+	}
+	
+	onButtonClick(_rowIndex, _isLeft) {
+		switch (_rowIndex) {
+			case 0: _isLeft ? this.toggleShowSymbol(this.showRoadVarNameRoot) : this.openRoadRangeWindow(); break;
+		}
+	}
+	
+	toggleShowSymbol(_simVarNameRoot) {
+		AS3000_MapElement.setSyncedSettingVar(_simVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(_simVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
+	}
+	
+	// road helpers
+	
+	openRoadRangeWindow() {
+		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_RANGE_MAX);
+		
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Road Range", this.setRoadRange.bind(this), AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	setRoadRange(_val) {
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT, this.parentElement.simVarNameID, _val);
 	}
 }
 
@@ -3877,6 +3926,7 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	onEnter() {
 		super.onEnter();
 		this.setElements(this.tempTitle, this.tempElements, this.tempCallback);
+		this.scrollToHighlightedButton();
 		this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
 	}
@@ -3897,6 +3947,13 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
         this.gps.deactivateNavButton(2);
 		super.onExit();
 	}
+	
+	setElements(_title, _elements, _callback) {
+        super.setElements(_title, _elements, _callback);
+        while (this.buttons.length > _elements.length) {
+            this.content.removeChild(this.buttons.pop().button);
+        }
+    }
 	
 	setContext(_title, _callback, _simVarName, _elements, _homePageParent, _homePageName, _callbackData = null) {
 		this.tempTitle = _title;
@@ -3922,6 +3979,14 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	backHome() {
 		this.gps.closePopUpElement();
 		this.gps.SwitchToPageName(this.homePageParent, this.homePageName);
+	}
+	
+	scrollToHighlightedButton() {
+		//this.buttons[SimVar.GetSimVarValue(this.simVarName, "number")].button.scrollIntoView();
+		let target = this.buttons[SimVar.GetSimVarValue(this.simVarName, "number")].button;
+		let pos = target.offsetTop - this.content.clientHeight / 2 + target.clientHeight / 2;
+		console.log("scroll target y is " + pos);
+		this.content.scrollTop = pos;
 	}
 }
 

@@ -19,9 +19,13 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
                 this._visibleCanvas.canvas.style.display = "none";
         }
 		
-		let visibilityChanged = (this.lastShowRoads != map.htmlRoot.showRoads) ||
-								(this.lastShowAirspaces != map.htmlRoot.showAirspaces) ||
-								(this.lastShowAirways != map.htmlRoot.showAirways);
+		let showRoads = map.htmlRoot.showRoads && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.roadMaxRange);
+		let showAirspaces = map.htmlRoot.showAirspaces && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.airspaceMaxRange);
+		let showAirways = map.htmlRoot.showAirways;
+		
+		let visibilityChanged = (this.lastShowRoads != showRoads) ||
+								(this.lastShowAirspaces != showAirspaces) ||
+								(this.lastShowAirways != showAirways);
 								
 		this.lastShowRoads = map.htmlRoot.showRoads;
 		this.lastShowAirspaces = map.htmlRoot.showAirspaces;
@@ -166,9 +170,9 @@ class SvgRoadNetworkElementEnhanced extends SvgRoadNetworkElement {
             let link = links.get(this._iterator++);
             if (link) {
 				
-				if ((link.type < 100 && !map.htmlRoot.showRoads) ||
-					(link.type == 101 && !map.htmlRoot.showAirways) ||
-					(link.type > 102 && !map.htmlRoot.showAirspaces)) {
+				if ((link.type < 100 && !showRoads) ||
+					(link.type == 101 && !showAirways) ||
+					(link.type > 102 && !showAirspaces)) {
 					continue;
 				}
 				
