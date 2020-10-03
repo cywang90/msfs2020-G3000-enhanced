@@ -14,11 +14,11 @@ class MapInstrumentEnhanced extends MapInstrument {
 		
 		this.rotation = 0; // current rotation of map, in degrees
 		
-		this.smallAirportMaxRange = this._ranges[8];
-		this.medAirportMaxRange = this._ranges[8];
-		this.largeAirportMaxRange = this._ranges[8];
-		this.vorMaxRange = this._ranges[8];
-		this.ndbMaxRange = this._ranges[8];
+		this.smallAirportMaxRange = this._ranges[10];
+		this.medAirportMaxRange = this._ranges[10];
+		this.largeAirportMaxRange = this._ranges[10];
+		this.vorMaxRange = this._ranges[10];
+		this.ndbMaxRange = this._ranges[10];
 	}
 	
 	init(arg) {
@@ -147,23 +147,6 @@ class MapInstrumentEnhanced extends MapInstrument {
         window.document.addEventListener("OnVCockpitPanelAttributesChanged", this.updateVisibility.bind(this));
         this.bIsInit = true;
     }
-	
-	onBeforeMapRedraw() {
-		super.onBeforeMapRedraw();
-		
-		if (this.eBingMode !== EBingMode.HORIZON && (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) && this.bingMap) {
-			let transform = "";
-			if (!this.isDisplayingWeatherRadar() && this.orientation != "north") {
-				if (this.orientation == "hdg") {
-					var roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
-				} else if (this.orientation == "trk") {
-					var roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 3);
-				}
-				transform = "rotate(" + -roundedCompass + "deg)";
-			}
-			this.bingMap.style.transform = transform;
-		}
-	}
 	
 	onBeforeMapRedraw() {
         if (this.eBingMode !== EBingMode.HORIZON) {
@@ -404,7 +387,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                         }
                     }
                 }
-                if (this.showVORs && (this.getDisplayRange() < this.vorMaxRange/* || this.getDeclutteredRange() < this.minimizedVorMaxRange*/)) {
+                if (this.showVORs && (this.getDisplayRange() <= this.vorMaxRange/* || this.getDeclutteredRange() < this.minimizedVorMaxRange*/)) {
                     for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                         let vor = this.vorLoader.waypoints[i];
                         vor.getSvgElement(this.navMap.index).minimize = false;//this.getDeclutteredRange() > this.vorMaxRange;
@@ -413,7 +396,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                         }
                     }
                 }
-                if (this.showNDBs && (this.getDisplayRange() < this.ndbMaxRange/* || this.getDeclutteredRange() < this.minimizedNdbMaxRange*/)) {
+                if (this.showNDBs && (this.getDisplayRange() <= this.ndbMaxRange/* || this.getDeclutteredRange() < this.minimizedNdbMaxRange*/)) {
                     for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                         let ndb = this.ndbLoader.waypoints[i];
                         ndb.getSvgElement(this.navMap.index).minimize = false;//this.getDeclutteredRange() > this.ndbMaxRange;
