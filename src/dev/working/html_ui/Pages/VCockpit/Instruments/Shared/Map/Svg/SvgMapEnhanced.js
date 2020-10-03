@@ -57,12 +57,15 @@ class SvgMapEnhanced extends SvgMap {
         this.cosRotation = Math.cos(this.rotation * Math.PI / 180);
         this.sinRotation = Math.sin(this.rotation * Math.PI / 180);
         this.planeAltitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
+		
+		
         let w = this.htmlRoot.getWidth();
         let h = this.htmlRoot.getHeight();
         let r = w / h;
         if (isFinite(r) && r > 0) {
             this._ratio = r;
         }
+		
         if (this._lastW !== w || this._lastH !== h) {
             this._lastW = w;
             this._lastH = h;
@@ -180,6 +183,35 @@ class SvgMapEnhanced extends SvgMap {
                 SvgMapElement.logPerformances();
             }
         }
+    }
+	
+	resize(w, h) {
+        console.log("SvgMap Resize : " + w + " " + h);
+        let max = Math.max(w, h);
+		
+		//max *= MapInstrumentEnhanced.OVERDRAW_FACTOR;
+		
+        //this.svgHtmlElement.setAttribute("width", fastToFixed(max, 0) + "px");
+        //this.svgHtmlElement.setAttribute("height", fastToFixed(max, 0) + "px");
+        let top = "0px";
+        let left = "0px";
+		/*
+        if (h < max) {
+            top = fastToFixed((h - max) / 2, 0) + "px";
+        }
+        if (w < max) {
+            left = fastToFixed((w - max) / 2, 0) + "px";
+        }
+		*/
+		this.svgHtmlElement.style.width = fastToFixed(max, 0) + "px";
+		this.svgHtmlElement.style.height = fastToFixed(max, 0) + "px";
+		this.svgHtmlElement.style.top = fastToFixed((h - max) / 2, 0) + "px";
+		this.svgHtmlElement.style.left = fastToFixed((w - max) / 2, 0) + "px";
+			
+        //this.svgHtmlElement.style.top = top;
+        //this.svgHtmlElement.style.left = left;
+        this.lineCanvas.width = w;
+        this.lineCanvas.height = h;
     }
     
     latLongToXYToRef(lat, long, ref) {

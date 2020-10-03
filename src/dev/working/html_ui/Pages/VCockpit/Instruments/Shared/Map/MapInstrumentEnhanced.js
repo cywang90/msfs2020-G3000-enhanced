@@ -260,7 +260,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                 else {
                     this.navMap.setRange(this.getDisplayRange());
                 }
-                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor;
+                var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * MapInstrumentEnhanced.OVERDRAW_FACTOR;
                 if (!this.isDisplayingWeather())
                     this.updateBingMapSize();
                 if (this.navMap.lastCenterCoordinates)
@@ -515,7 +515,7 @@ class MapInstrumentEnhanced extends MapInstrument {
 						if (this.orientation == "hdg") {
 							roundedCompass = fastToFixed(SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree"), 3);
 						} else if (this.orientation == "trk") {
-							roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 3);
+							roundedCompass = fastToFixed(SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree"), 3);
 						}
 						transform = "rotate(" + -roundedCompass + "deg)";
 					}
@@ -622,8 +622,7 @@ class MapInstrumentEnhanced extends MapInstrument {
         let max = Math.max(w, h);
 		
 		// to compensate for potential rotation, we need to overdraw the map
-		// the factor is sqrt(2)
-		max *= 1.41421356;
+		max *= MapInstrumentEnhanced.OVERDRAW_FACTOR;
 		
         if (w * h > 1 && w * h !== this.lastWH) {
             this.lastWH = w * h;
@@ -633,6 +632,10 @@ class MapInstrumentEnhanced extends MapInstrument {
             this.bingMap.style.left = fastToFixed((w - max) / 2, 0) + "px";
         }
     }
+	
+	getTrueRange() {
+		return this.getDisplayRange() * MapInstrumentEnhanced.OVERDRAW_FACTOR;
+	}
 	
 	centerOnPlane() {
 		if (this.orientation == "north") {
@@ -677,7 +680,7 @@ class MapInstrumentEnhanced extends MapInstrument {
 		this.roadMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
 }
-
+MapInstrumentEnhanced.OVERDRAW_FACTOR = Math.sqrt(2);
 MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 25, 35, 50, 100, 150, 200, 250, 400, 500, 750, 1000];
 
 customElements.define("map-instrument-enhanced", MapInstrumentEnhanced);
