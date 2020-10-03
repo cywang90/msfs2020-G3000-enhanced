@@ -231,9 +231,14 @@ as3000-mfd-element {
 			  font-size: calc( 3 * 1vh * var(--bodyHeightScale)); }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData {
               position: absolute;
-              top: 0%;
-              width: 7%;
-              right: 5%; }
+              top: 0.25%;
+              width: 10%;
+              right: 10%; }
+			  as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #WindData .svg {
+                position: absolute;
+                top: 0%;
+				height: 100%; 
+				width: 100%; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #Map #MapRange {
               position: absolute;
               bottom: 0%;
