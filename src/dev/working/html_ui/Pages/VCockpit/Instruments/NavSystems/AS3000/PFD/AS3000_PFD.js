@@ -170,7 +170,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
 		this.pfdMapMenu.elements = [
 			new AS3000_PFD_SoftKeyElement("Map Layout", this.switchToMenu.bind(this, this.pfdMapLayoutMenu)),
-			new AS3000_PFD_SoftKeyElement("Detail"),
+			new AS3000_PFD_SoftKeyElement("Detail", this.toggleDcltr.bind(this), null, this.dlctrStatus.bind(this), this.getInsetMapSoftkeyState.bind(this)),
 			new AS3000_PFD_SoftKeyElement("Weather Legend"),
 			new AS3000_PFD_SoftKeyElement("Traffic"),
 			new AS3000_PFD_SoftKeyElement("Storm-scope"),
@@ -232,6 +232,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     constElement(_elem) {
         return _elem;
     }
+	
 	// PFD inset map softkeys should be greyed out if the map is not shown.
 	getInsetMapSoftkeyState() {
 		if (this.innerMap.isEnabled()) {
@@ -240,6 +241,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 			return "Greyed";
 		}
 	}
+	
 	changeMapRange(_dir) {
 		if (this.innerMap.isEnabled()) {
 			if (_dir == "dec") {
@@ -249,20 +251,35 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 			}
 		}
 	}
+	
 	activateInsetMap() {
         this.gps.computeEvent("SoftKeys_InsetOn");
     }
+	
     deactivateInsetMap() {
         this.gps.computeEvent("SoftKeys_InsetOff");
     }
+	
 	insetMapCompare(_comparison) {
 		return this.innerMap.isEnabled() == _comparison;
 	}
+	
+	toggleDcltr() {
+		if (this.innerMap.isEnabled()) {
+			AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_DETAIL_ROOT, this.innerMap.simVarNameID, (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number") + 1) % 4);
+		}
+	}
+	
+	dlctrStatus() {
+		return AS3000_MapElement.DETAIL_DISPLAY_TEXT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_DETAIL_ROOT + this.innerMap.simVarNameID, "number")];
+	}
+	
 	toggleWX() {
 		if (this.innerMap.isEnabled()) {
 			this.innerMap.toggleNexrad();
 		}
 	}
+	
 	wxOverlayStatus() {
 		if (this.innerMap.getNexrad()) {
 			return "NEXRAD";
@@ -270,6 +287,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 			return "OFF";
 		}
 	}
+	
     bearing1Status() {
         if (this.hsi && this.hsi.getAttribute("show_bearing1") == "true") {
             return this.hsi.getAttribute("bearing1_source");

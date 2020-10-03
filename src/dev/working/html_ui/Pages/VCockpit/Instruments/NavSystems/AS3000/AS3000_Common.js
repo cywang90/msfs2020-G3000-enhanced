@@ -212,8 +212,15 @@ AS3000_MapElement.VARNAME_ORIENTATION_ROOT = "L:AS3000_Map_Orientation";
 AS3000_MapElement.VARNAME_SYNC = "L:AS3000_Map_Sync";
 AS3000_MapElement.VARNAME_SYNC_INITID = "L:AS3000_Map_Sync_InitID";
 AS3000_MapElement.SYNC_INITID_ARRAY = ["_PFD", "_MFD"];						// horrible hack because I can't get SetSimVar to work for strings
-AS3000_MapElement.VARNAME_DETAIL_ROOT = "L:AS3000_Map_Dcltr";
 AS3000_MapElement.VARNAME_SYNC_ALL_ID = "_SyncAll";
+
+AS3000_MapElement.VARNAME_DETAIL_ROOT = "L:AS3000_Map_Dcltr";
+AS3000_MapElement.DETAIL_DISPLAY_TEXT = [
+		"All",
+		"DCLTR 1",
+		"DCLTR 2",
+		"Least"
+];
 
 AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT = new Map([
 		["show-roads", "L:AS3000_Map_Roads_Show"],
