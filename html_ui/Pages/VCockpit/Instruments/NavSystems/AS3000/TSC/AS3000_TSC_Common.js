@@ -3631,13 +3631,16 @@ class AS3000_TSC_MapSettingsTab {
 		this.buttonRowList = this.container.getElementsByClassName("MapSettingsTabRow");
 		this.buttonLeftList = [];
 		this.buttonRightList = [];
+		this.buttonRightStatusTextList = [];
 		for (let row of this.buttonRowList) {
 			let rowButtons = row.getElementsByClassName("gradientButton");
 			this.buttonLeftList.push(rowButtons[0]);
 			if (rowButtons.length > 1) {
 				this.buttonRightList.push(rowButtons[1]);
+				this.buttonRightStatusTextList.push(rowButtons[1].getElementsByClassName("statusText")[0]);
 			} else {
 				this.buttonRightList.push(null);
+				this.buttonRightStatusTextList.push(null);
 			}
 		}
 		
@@ -3655,6 +3658,14 @@ class AS3000_TSC_MapSettingsTab {
 	
 	onButtonClick(_rowIndex, _isLeft) {
 	}
+	
+	static getRangeValuesDisplayToMax(_max) {
+		let values = [];
+		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= _max; i++) {
+			values.push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
+		}
+		return values;
+	}
 }
 
 class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
@@ -3662,8 +3673,10 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 		super(_parentElement);
 		this.showAirspaceVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airspaces");
 		this.showAirportVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-airports");
+		this.showVORVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-vors");
+		this.showNDBVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-ndbs");
 		
-		this.airportTypeSimVarNames = [
+		this.airportTypeSimVarRoots = [
 			AS3000_MapElement.VARNAME_AIRPORT_LARGE_RANGE_ROOT,
 			AS3000_MapElement.VARNAME_AIRPORT_MEDIUM_RANGE_ROOT,
 			AS3000_MapElement.VARNAME_AIRPORT_SMALL_RANGE_ROOT
@@ -3673,44 +3686,40 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 			"Map Medium Airport Range",
 			"Map Small Airport Range"
 		];
-		this.airportTypeRangeValues = [[], [], []];
-		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX; i++) {
-			this.airportTypeRangeValues[0].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
-		}
-		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX; i++) {
-			this.airportTypeRangeValues[1].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
-		}
-		for (let i = 0; i < MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length && MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] <= AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX; i++) {
-			this.airportTypeRangeValues[2].push(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[i] + "NM");
-		}
 	}
 	
 	update() {
-		// airspaces
+		// toggles
 		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(this.showAirspaceVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
-		
-		// airports
 		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(this.showAirportVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[2], "state", (SimVar.GetSimVarValue(this.showVORVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[3], "state", (SimVar.GetSimVarValue(this.showNDBVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		
+		// ranges
+		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[2], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
+		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[3], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
 	}
 	
 	onButtonClick(_rowIndex, _isLeft) {
 		switch (_rowIndex) {
-			case 0: _isLeft ? this.toggleShowAirspace() : this.openAirspaceRangeWindow(); break;
-			case 1: _isLeft ? this.toggleShowAirport() : this.openAirportRangeTypeWindow(); break;
+			case 0: _isLeft ? this.toggleShowSymbol(this.showAirspaceVarNameRoot) : this.openAirspaceRangeWindow(); break;
+			case 1: _isLeft ? this.toggleShowSymbol(this.showAirportVarNameRoot) : this.openAirportRangeTypeWindow(); break;
+			case 2: _isLeft ? this.toggleShowSymbol(this.showVORVarNameRoot) : this.openVORRangeWindow(); break;
+			case 3: _isLeft ? this.toggleShowSymbol(this.showNDBVarNameRoot) : this.openNDBRangeWindow(); break;
 		}
 	}
 	
-	toggleShowAirspace() {
-		AS3000_MapElement.setSyncedSettingVar(this.showAirspaceVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(this.showAirspaceVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
+	toggleShowSymbol(_simVarNameRoot) {
+		AS3000_MapElement.setSyncedSettingVar(_simVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(_simVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
 	}
+	
+	// airspace helpers
 	
 	openAirspaceRangeWindow() {
 		
 	}
 	
-	toggleShowAirport() {
-		AS3000_MapElement.setSyncedSettingVar(this.showAirportVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(this.showAirportVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
-	}
+	// airport helpers
 	
 	openAirportRangeTypeWindow() {
 		this.parentElement.gps.mapAirportRangeTypeSelect.element.setContext(this.openAirportRangeWindow.bind(this), this.getAirportTypeRangeDisplay.bind(this), this.parentElement.homePageParent, this.parentElement.homePageName);
@@ -3718,16 +3727,49 @@ class AS3000_TSC_MapSettingsAviationTab extends AS3000_TSC_MapSettingsTab {
 	}
 	
 	openAirportRangeWindow(_index) {
-		this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.airportTypeRangeSelectTitles[_index], this.setAirportTypeRange.bind(this), this.airportTypeSimVarNames[_index] + this.parentElement.simVarNameID, this.airportTypeRangeValues[_index], this.parentElement.homePageParent, this.parentElement.homePageName, this.airportTypeSimVarNames[_index]);
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.airportTypeRangeSelectTitles[_index], this.setAirportTypeRange.bind(this), this.airportTypeSimVarRoots[_index] + this.parentElement.simVarNameID, this.getAirportTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.airportTypeSimVarRoots[_index]);
 		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
 	}
 	
 	getAirportTypeRangeDisplay(_index) {
-		return MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.airportTypeSimVarNames[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+		return MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.airportTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+	}
+	
+	getAirportTypeRangeValues(_index) {
+		switch (_index) {
+		case 0: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_LARGE_RANGE_MAX);
+		case 1: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_MEDIUM_RANGE_MAX);
+		case 2: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.AIRPORT_SMALL_RANGE_MAX);
+		}
+		return [];
 	}
 	
 	setAirportTypeRange(_val, _varNameRoot) {
 		AS3000_MapElement.setSyncedSettingVar(_varNameRoot, this.parentElement.simVarNameID, _val);
+	}
+	
+	// VOR/NDB helpers
+	
+	openVORRangeWindow() {
+		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.VOR_RANGE_MAX);
+		
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map VOR Range", this.setVORRange.bind(this), AS3000_MapElement.VARNAME_VOR_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	openNDBRangeWindow() {
+		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.NDB_RANGE_MAX);
+		
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map NDB Range", this.setNDBRange.bind(this), AS3000_MapElement.VARNAME_NDB_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	setVORRange(_val) {
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_VOR_RANGE_ROOT, this.parentElement.simVarNameID, _val);
+	}
+	
+	setNDBRange(_val) {
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_NDB_RANGE_ROOT, this.parentElement.simVarNameID, _val);
 	}
 }
 
@@ -3867,7 +3909,7 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	}
 	
 	onElemClick(_id) {
-        this.callback(_id, this.callbackData);
+        this.callbackData == null ? this.callback(_id) : this.callback(_id, this.callbackData);
 		if (this.closeOnSelect) {
 			this.gps.goBack();
 		}

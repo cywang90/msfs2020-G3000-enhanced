@@ -14,9 +14,11 @@ class MapInstrumentEnhanced extends MapInstrument {
 		
 		this.rotation = 0; // current rotation of map, in degrees
 		
-		this.smallAirportMaxRange = this._ranges[this._ranges.length - 1];
-		this.medAirportMaxRange = this._ranges[this._ranges.length - 1];
-		this.largeAirportMaxRange = this._ranges[this._ranges.length - 1];
+		this.smallAirportMaxRange = this._ranges[8];
+		this.medAirportMaxRange = this._ranges[8];
+		this.largeAirportMaxRange = this._ranges[8];
+		this.vorMaxRange = this._ranges[8];
+		this.ndbMaxRange = this._ranges[8];
 	}
 	
 	init(arg) {
@@ -300,7 +302,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                 if (this.showVORs) {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
-                    this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.vorLoader.searchRange = Math.min(this.navMap.NMWidth, this.vorMaxRange) * 1.5;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -308,7 +310,7 @@ class MapInstrumentEnhanced extends MapInstrument {
                 if (this.showNDBs) {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
-                    this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.ndbLoader.searchRange = Math.min(this.navMap.NMWidth, this.ndbMaxRange) * 1.5;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
@@ -402,19 +404,19 @@ class MapInstrumentEnhanced extends MapInstrument {
                         }
                     }
                 }
-                if (this.showVORs && (this.getDeclutteredRange() < this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
+                if (this.showVORs && (this.getDisplayRange() < this.vorMaxRange/* || this.getDeclutteredRange() < this.minimizedVorMaxRange*/)) {
                     for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                         let vor = this.vorLoader.waypoints[i];
-                        vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
+                        vor.getSvgElement(this.navMap.index).minimize = false;//this.getDeclutteredRange() > this.vorMaxRange;
                         if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
                         }
                     }
                 }
-                if (this.showNDBs && (this.getDeclutteredRange() < this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
+                if (this.showNDBs && (this.getDisplayRange() < this.ndbMaxRange/* || this.getDeclutteredRange() < this.minimizedNdbMaxRange*/)) {
                     for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                         let ndb = this.ndbLoader.waypoints[i];
-                        ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
+                        ndb.getSvgElement(this.navMap.index).minimize = false;//this.getDeclutteredRange() > this.ndbMaxRange;
                         if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
                         }
@@ -672,6 +674,14 @@ class MapInstrumentEnhanced extends MapInstrument {
 	
 	set largeAirportMaxRangeIndex(_index) {
 		this.largeAirportMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set vorMaxRangeIndex(_index) {
+		this.vorMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set ndbMaxRangeIndex(_index) {
+		this.ndbMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
 }
 
