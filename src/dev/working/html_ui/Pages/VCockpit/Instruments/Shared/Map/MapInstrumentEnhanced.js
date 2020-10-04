@@ -19,6 +19,7 @@ class MapInstrumentEnhanced extends MapInstrument {
 		this.medAirportMaxRange = this._ranges[10];
 		this.largeAirportMaxRange = this._ranges[10];
 		this.vorMaxRange = this._ranges[10];
+		this.intMaxRange = this._ranges[10];
 		this.ndbMaxRange = this._ranges[10];
 		this.roadHighwayMaxRange = this._ranges[10];
 		this.roadTrunkMaxRange = this._ranges[10];
@@ -409,10 +410,10 @@ class MapInstrumentEnhanced extends MapInstrument {
                         }
                     }
                 }
-                if (this.showIntersections && (this.getDeclutteredRange() < this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
+                if (this.showIntersections && (this.getDisplayRange() <= this.intMaxRange/* || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange*/)) {
                     for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                         let intersection = this.intersectionLoader.waypoints[i];
-                        intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
+                        intersection.getSvgElement(this.navMap.index).minimize = false;//this.getDeclutteredRange() > this.intersectionMaxRange;
                         if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
                             this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
                         }
@@ -672,6 +673,10 @@ class MapInstrumentEnhanced extends MapInstrument {
 	
 	set vorMaxRangeIndex(_index) {
 		this.vorMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
+	}
+	
+	set intMaxRangeIndex(_index) {
+		this.intMaxRange = this._ranges[Math.min(Math.max(_index, 0), this._ranges.length - 1)];
 	}
 	
 	set ndbMaxRangeIndex(_index) {
