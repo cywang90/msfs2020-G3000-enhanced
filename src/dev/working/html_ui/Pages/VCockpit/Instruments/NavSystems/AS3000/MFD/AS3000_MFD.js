@@ -107,13 +107,21 @@ class AS3000_MFD_WindDataDisplay extends HTMLElement {
 		
         switch (name) {
             case "wind-mode":
-                if (newValue == 4) {
-					this.windData.setAttribute("display", "none");
-					this.noData.setAttribute("display", "inherit");
+				let backgroundDisplay = "inherit";
+				let windDataDisplay = "none";
+				let noDataDisplay = "none";
+				if (newValue == 0) {
+					backgroundDisplay = "none";
+                } else if (newValue == 4) {
+					windDataDisplay = "none";
+					noDataDisplay = "inherit";
 				} else {
-					this.windData.setAttribute("display", "inherit");
-					this.noData.setAttribute("display", "none");
+					windDataDisplay = "inherit";
+					noDataDisplay = "none";
 				}
+				this.windDataBackground.setAttribute("display", backgroundDisplay);
+				this.windData.setAttribute("display", windDataDisplay);
+				this.noData.setAttribute("display", noDataDisplay);
                 break;
             case "wind-direction":
                 this.arrow.setAttribute("transform", "rotate(" + newValue + ", 25, 25)");
@@ -147,24 +155,28 @@ class AS3000_MFD_WindData extends MFD_WindData {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-		if (SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 5) {
-			this.svg.setAttribute("wind-mode", "4")
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.mapElement.simVarNameID, "number") == 0) {
+			this.svg.setAttribute("wind-mode", "0");
 		} else {
-			var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
-			
-			// compensate for map rotation
-			wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
-			
-			if (wind != this.windValue) {
-				this.svg.setAttribute("wind-direction", wind);
-				this.windValue = wind;
+			if (SimVar.GetSimVarValue("GPS GROUND SPEED", "knots") < 5) {
+				this.svg.setAttribute("wind-mode", "4")
+			} else {
+				var wind = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180; // fix for MFD wind direction bug
+				
+				// compensate for map rotation
+				wind = fastToFixed((wind + this.mapElement.instrument.rotation) % 360, 0);
+				
+				if (wind != this.windValue) {
+					this.svg.setAttribute("wind-direction", wind);
+					this.windValue = wind;
+				}
+				var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
+				if (strength != this.strengthValue) {
+					this.svg.setAttribute("wind-strength", strength);
+					this.strengthValue = strength;
+				}
+				this.svg.setAttribute("wind-mode", "2");
 			}
-			var strength = fastToFixed(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), 0);
-			if (strength != this.strengthValue) {
-				this.svg.setAttribute("wind-strength", strength);
-				this.strengthValue = strength;
-			}
-			this.svg.setAttribute("wind-mode", "2");
 		}
     }
     onExit() {

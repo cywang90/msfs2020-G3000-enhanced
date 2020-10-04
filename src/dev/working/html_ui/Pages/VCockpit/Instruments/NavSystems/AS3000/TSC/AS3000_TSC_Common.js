@@ -3413,6 +3413,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		this.tabbedContentContainer = new AS3000_TSC_TabbedContent(this);
 		this.aviationTab = new AS3000_TSC_MapSettingsAviationTab(this);
 		this.landTab = new AS3000_TSC_MapSettingsLandTab(this);
+		this.otherTab = new AS3000_TSC_MapSettingsOtherTab(this);
 		
 		this.updateCallbacks = [];
 	}
@@ -3457,6 +3458,8 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 		this.updateCallbacks.push(this.aviationTab.update.bind(this.aviationTab));
 		this.landTab.init(_root.getElementsByClassName("MapLandTab")[0]);
 		this.updateCallbacks.push(this.landTab.update.bind(this.landTab));
+		this.otherTab.init(_root.getElementsByClassName("MapOtherTab")[0]);
+		this.updateCallbacks.push(this.otherTab.update.bind(this.otherTab));
 	}
 	
     onEnter() {
@@ -3861,6 +3864,41 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
 	
 	setRoadTypeRange(_val, _varNameRoot) {
 		AS3000_MapElement.setSyncedSettingVar(_varNameRoot, this.parentElement.simVarNameID, _val);
+	}
+}
+
+class AS3000_TSC_MapSettingsOtherTab extends AS3000_TSC_MapSettingsTab {	
+	update() {
+		// toggles
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[1], "state", (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
+		
+		// statuses
+		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
+	}
+	
+	onButtonClick(_rowIndex, _isLeft) {
+		switch (_rowIndex) {
+			case 0: _isLeft ? this.toggleShowSymbol(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT) : this.openNorthUpRangeWindow(); break;
+			case 1: this.toggleShowSymbol(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT); break;
+		}
+	}
+	
+	toggleShowSymbol(_simVarNameRoot) {
+		AS3000_MapElement.setSyncedSettingVar(_simVarNameRoot, this.parentElement.simVarNameID, SimVar.GetSimVarValue(_simVarNameRoot + this.parentElement.simVarNameID, "number") ^ 1);
+	}
+	
+	// road helpers
+	
+	openNorthUpRangeWindow() {
+		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT.length - 1]);
+		
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map North Up Above", this.setNorthUpRange.bind(this), AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
+	}
+	
+	setNorthUpRange(_val) {
+		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT, this.parentElement.simVarNameID, _val);
 	}
 }
 

@@ -29,7 +29,10 @@ class AS3000_MapElement extends MapInstrumentElement {
 			AS3000_MapElement.VARNAME_NDB_RANGE_ROOT,
 			AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
 			AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
-			AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT
+			AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT,
+			AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT,
+			AS3000_MapElement.NORTHUP_RANGE_DEFAULT
 		]
     }
 	
@@ -59,6 +62,11 @@ class AS3000_MapElement extends MapInstrumentElement {
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_HIGHWAY_RANGE_DEFAULT));
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT));
 		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT));
+		
+		// "Other" settings
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number", 0);
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number", this.instrument.zoomRanges.indexOf(AS3000_MapElement.NORTHUP_RANGE_DEFAULT));
+		SimVar.SetSimVarValue(AS3000_MapElement.VARNAME_WIND_SHOW_ROOT + this.simVarNameID, "number", 0);
     }
 	
 	initDcltrSettings() {
@@ -137,8 +145,16 @@ class AS3000_MapElement extends MapInstrumentElement {
 	
 	updateOrientation() {
 		let orientation = SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ORIENTATION_ROOT + this.simVarNameID, "number");
+		
+		// handle Auto North Up
+		if (SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT + this.simVarNameID, "number") == 1) {
+			if (this.instrument.getDisplayRange() >= this.instrument.zoomRanges[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT + this.simVarNameID, "number")]) {
+				orientation = 2;
+			}
+		}
+		
 		if (this.lastOrientation != orientation) {
-			switch (orientation) {
+			switch (orientation % 3) {
 			case 0:
 				this.instrument.setOrientation("hdg");
 				break;
@@ -271,3 +287,8 @@ AS3000_MapElement.ROAD_TRUNK_RANGE_DEFAULT = 15;
 AS3000_MapElement.ROAD_TRUNK_RANGE_MAX = 150;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_DEFAULT = 5;
 AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX = 25;
+
+AS3000_MapElement.VARNAME_NORTHUP_ACTIVE_ROOT = "L:AS3000_NorthUpAbove_Active";
+AS3000_MapElement.VARNAME_NORTHUP_RANGE_ROOT = "L:AS3000_NorthUpAbove_Range";
+AS3000_MapElement.NORTHUP_RANGE_DEFAULT = 1000;
+AS3000_MapElement.VARNAME_WIND_SHOW_ROOT = "L:AS3000_Wind_Show";
