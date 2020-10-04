@@ -161,6 +161,9 @@ class AS3000_TSC extends NavSystemTouch {
 		this.mapAirportRangeTypeSelect = new NavSystemElementContainer("Airport Settings", "MapAirportRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
         this.mapAirportRangeTypeSelect.setGPS(this);
 		
+		this.mapRoadRangeTypeSelect = new NavSystemElementContainer("Road Settings", "MapRoadRangeTypeSelect", new AS3000_TSC_StatusButtonSelectionListWindow(false));
+        this.mapRoadRangeTypeSelect.setGPS(this);
+		
 		Include.addScript("/JS/debug.js", function () {
 			g_modDebugMgr.AddConsole(null);
 		});
@@ -3788,19 +3791,27 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
 	constructor(_parentElement) {
 		super(_parentElement);
 		this.showRoadVarNameRoot = AS3000_MapElement.VARNAME_SYMBOL_VIS_ROOT.get("show-roads");
+		
+		this.roadTypeSimVarRoots = [
+			AS3000_MapElement.VARNAME_ROAD_HIGHWAY_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_ROAD_TRUNK_RANGE_ROOT,
+			AS3000_MapElement.VARNAME_ROAD_PRIMARY_RANGE_ROOT
+		];
+		this.roadTypeRangeSelectTitles = [
+			"Map Highway Range",
+			"Map Trunk Road Range",
+			"Map Local Road Range"
+		];
 	}
 	
 	update() {
 		// toggles
 		Avionics.Utils.diffAndSetAttribute(this.buttonLeftList[0], "state", (SimVar.GetSimVarValue(this.showRoadVarNameRoot + this.parentElement.simVarNameID, "number") == 1) ? "Active" : "");
-		
-		// ranges
-		Avionics.Utils.diffAndSet(this.buttonRightStatusTextList[0], MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.parentElement.simVarNameID, "number")] + "NM");
 	}
 	
 	onButtonClick(_rowIndex, _isLeft) {
 		switch (_rowIndex) {
-			case 0: _isLeft ? this.toggleShowSymbol(this.showRoadVarNameRoot) : this.openRoadRangeWindow(); break;
+			case 0: _isLeft ? this.toggleShowSymbol(this.showRoadVarNameRoot) : this.openRoadRangeTypeWindow(); break;
 		}
 	}
 	
@@ -3810,15 +3821,31 @@ class AS3000_TSC_MapSettingsLandTab extends AS3000_TSC_MapSettingsTab {
 	
 	// road helpers
 	
-	openRoadRangeWindow() {
-		let values = AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_RANGE_MAX);
-		
-		this.parentElement.gps.dynamicSelectionListWindow.element.setContext("Map Road Range", this.setRoadRange.bind(this), AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT + this.parentElement.simVarNameID, values, this.parentElement.homePageParent, this.parentElement.homePageName);
+	openRoadRangeTypeWindow() {
+		this.parentElement.gps.mapRoadRangeTypeSelect.element.setContext(this.openRoadRangeWindow.bind(this), this.getRoadTypeRangeDisplay.bind(this), this.parentElement.homePageParent, this.parentElement.homePageName);
+		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.mapRoadRangeTypeSelect);
+	}
+	
+	openRoadRangeWindow(_index) {
+		this.parentElement.gps.dynamicSelectionListWindow.element.setContext(this.roadTypeRangeSelectTitles[_index], this.setRoadTypeRange.bind(this), this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, this.getRoadTypeRangeValues(_index), this.parentElement.homePageParent, this.parentElement.homePageName, this.roadTypeSimVarRoots[_index]);
 		this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow);
 	}
 	
-	setRoadRange(_val) {
-		AS3000_MapElement.setSyncedSettingVar(AS3000_MapElement.VARNAME_ROAD_RANGE_ROOT, this.parentElement.simVarNameID, _val);
+	getRoadTypeRangeDisplay(_index) {
+		return MapInstrumentEnhanced.ZOOM_RANGES_DEFAULT[SimVar.GetSimVarValue(this.roadTypeSimVarRoots[_index] + this.parentElement.simVarNameID, "number")] + "NM";
+	}
+	
+	getRoadTypeRangeValues(_index) {
+		switch (_index) {
+		case 0: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_HIGHWAY_RANGE_MAX);
+		case 1: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_TRUNK_RANGE_MAX);
+		case 2: return AS3000_TSC_MapSettingsTab.getRangeValuesDisplayToMax(AS3000_MapElement.ROAD_PRIMARY_RANGE_MAX);
+		}
+		return [];
+	}
+	
+	setRoadTypeRange(_val, _varNameRoot) {
+		AS3000_MapElement.setSyncedSettingVar(_varNameRoot, this.parentElement.simVarNameID, _val);
 	}
 }
 
@@ -3932,8 +3959,6 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	}
 	
 	onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-		
 		let currentVarValue = SimVar.GetSimVarValue(this.simVarName, "number");
 		for (let i = 0; i < this.buttons.length; i++) {
 			if (this.buttons[i].state != "Inactive") {
@@ -3982,10 +4007,8 @@ class AS3000_TSC_DynamicSelectionListWindow extends NavSystemTouch_SelectionList
 	}
 	
 	scrollToHighlightedButton() {
-		//this.buttons[SimVar.GetSimVarValue(this.simVarName, "number")].button.scrollIntoView();
 		let target = this.buttons[SimVar.GetSimVarValue(this.simVarName, "number")].button;
 		let pos = target.offsetTop - this.content.clientHeight / 2 + target.clientHeight / 2;
-		console.log("scroll target y is " + pos);
 		this.content.scrollTop = pos;
 	}
 }

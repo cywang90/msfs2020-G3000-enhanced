@@ -166,20 +166,9 @@
 			<POTENTIOMETER>4</POTENTIOMETER>
 		</DefaultTemplateParameters>
 		<UseTemplate Name="ASOBO_AS3000_12_Softkeys_Template">
-			<Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-				<True>
-					<EMISSIVE_CODE>(A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100)</EMISSIVE_CODE>
-					<SCREEN_EMISSIVE_CODE>0.5</SCREEN_EMISSIVE_CODE>
-				</True>
-				<False>
-					<EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
-				</False>
-			</Condition>
+			<EMISSIVE_CODE>(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +</EMISSIVE_CODE>
 		</UseTemplate>
 		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-			<Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-				<SCREEN_EMISSIVE_CODE>0.5</SCREEN_EMISSIVE_CODE>
-			</Condition>
 		</UseTemplate>
 	</Template>
 
@@ -223,9 +212,6 @@
 		</DefaultTemplateParameters>
 		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
 			<DISPLAY>TSC</DISPLAY>
-			<Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-				<SCREEN_EMISSIVE_CODE>0.5</SCREEN_EMISSIVE_CODE>
-			</Condition>
 		</UseTemplate>
 		<Component ID="#AS3000#_TSC_#ID#_PreventZoom" Node="#AS3000#_TSC_#ID#">
 			<UseTemplate Name="ASOBO_GT_Interaction_LeftSingle_Code">
@@ -265,9 +251,6 @@
 				<NODE_ID_INTERACTION>#AS3000#_Screen#SUFFIX_ID#</NODE_ID_INTERACTION>
 			</DefaultTemplateParameters>
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-				<Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-					<SCREEN_EMISSIVE_CODE>0.5</SCREEN_EMISSIVE_CODE>
-				</Condition>
 			</UseTemplate>
 			<Component ID="#AS3000#_TSC_#ID#_PreventZoom" Node="#NODE_ID_INTERACTION#">
 				<UseTemplate Name="ASOBO_GT_Interaction_LeftSingle_Code">
