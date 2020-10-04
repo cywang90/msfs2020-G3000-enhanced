@@ -5,6 +5,7 @@
 - \[MISC\] Added the ability to adjust backlighting via the G3000 touchscreen menu.
   - The menu adjustment will affect all G3000 screens (PFD, MFD, touchscreen) as well as backlighting of the PFD bezel keys (softkeys), and touchscreen knobs and bezel keys.
   - To change this setting, navigate to MFD Home -> Aircraft Systems -> Lighting Config. Use the slider or Inc/Dec buttons to adjust the backlight.
+- \[MISC\] Changed the default look of buttons on the touchscreen displays.
 - \[PFD\] PFD softkeys with disabled functionality are now displayed as grayed-out.
 - \[PFD\] Added the ability to toggle PFD inset map on/off.
   - To change this setting, use the PFD softkey menu to navigate to PFD Map Settings -> Map Layout, then select Map Off or Inset Map.

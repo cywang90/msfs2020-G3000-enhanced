@@ -10,7 +10,9 @@ This mod was created with cross-compatibility in mind. It modifies the minimum n
 **NOTE:** This version of the mod is _not_ compatible with the Cessna Citation Longitude yet. So far development has been primarily focused on the TBM 930, which I believe is more "mature" than the Longitude with regard to vanilla functionality and feature-completeness. I plan to make the mod compatible with the Longitude in the near future. It's mostly just porting html/css stuff, so it should be relatively simple.
 
 ### Installation
-For your convenience, I've provided two different packages to download: msfs2020-G3000-enhanced-std and msfs2020-G3000-enhanced-tbm. At this point, I recommend downloading the -tbm version for several reasons. First, the -std version will break the Cessna Citation Longitude (if you don't have the Longitude installed you can safely ignore this point). Second, the -tbm version includes an extra feature for the TBM 930 (see below). The only downside of the -tbm version is that unlike the -std version, it modifies aircraft-specific files and therefore may have compatibility issues with other TBM 930 mods.
+I recommend downloading the official release packages. If you want more up to date code, then you can always download snapshots of master or dev and build your packages directly from src/dev/working. master is *usually* pretty stable. dev is not guaranteed to be stable at all, but may be more up to date than master.
+
+For your convenience, I've provided two different packages: msfs2020-G3000-enhanced-std and msfs2020-G3000-enhanced-tbm. At this point, I recommend downloading the -tbm version for several reasons. First, the -std version will break the Cessna Citation Longitude (if you don't have the Longitude installed you can safely ignore this point). Second, the -tbm version includes an extra feature for the TBM 930 (see below). The only downside of the -tbm version is that unlike the -std version, it modifies aircraft-specific files and therefore may have compatibility issues with other TBM 930 mods.
 
 To install, copy msfs2020-G3000-enhanced-std or msfs2020-G3000-enhanced-tbm into your Community folder. To uninstall, delete the msfs2020-G3000-enhanced-xxx folder from your Community folder.
 
@@ -37,6 +39,7 @@ Please refer to the changelog for a more detailed description of updates.
 
 ### TODO
 *This is not a comprehensive list of planned features. It is simply an outline of the most immediate things I was planning to work on when this document was last updated.*
+- \[NavMap\] Implement toggle and range setting for INT waypoint symbols.
 - \[NavMap\] Implement Auto-North-Up and Auto Zoom.
 - \[NavMap\] Implement compass/heading rose and range overlays for the main navigational map.
 - \[NavMap\] Allow toggling of terrain elevation data on the navigational map.
